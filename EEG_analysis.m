@@ -16,7 +16,7 @@ Triggers.predictive_window.deterministic = {'S 16','S 26','S 36','S 46'};
 cap_conf = 'acticap-64ch-standard2.mat';
 
 
-%% ========================% Define trials and read data %========================= %%
+%% ========================% Define and read data %========================= %%
 
 %%%%% Segmenting definition %%%%%
 cfg                         = [];
