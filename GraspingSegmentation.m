@@ -12,7 +12,7 @@ FirstFixation = event(Fixations(1)).sample;
 % Read the CSV
 colnames  = {'BeginTime_msec','EndTime_msec','Duration_msec','Goodness',...
     'Annotations','ActionExecution'};
-T = readtable([InPath Subject '\ActionExecution.csv']);
+T = readtable(cfg.csv);
 T.Properties.VariableNames = colnames;
 
 % Center on the first video fixation
