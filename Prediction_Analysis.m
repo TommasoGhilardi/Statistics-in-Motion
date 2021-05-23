@@ -51,6 +51,9 @@ cfg.trialdef.prestim        = 0; % in seconds
 cfg.trialdef.poststim       = 1; % in seconds
 cfg = ft_definetrial(cfg);
 
+%%%%% Reject the trials that were excluded with videocoding %%%%%
+cfg = RejectVisualCoding(cfg, [InPath Subject '\ActionExecution.csv']);
+
 %%%%% Read data and segment %%%%%
 cfg.hpfilter    = 'yes';        % enable high-pass filtering
 cfg.lpfilter    = 'yes';        % enable low-pass filtering
