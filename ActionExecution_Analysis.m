@@ -31,6 +31,7 @@ cap_conf = 'acticap-64ch-standard2.mat';
 %%%%% Segmenting definition %%%%%
 cfg                         = [];
 cfg.dataset                 = [InPath,Subject,'\' Subject '.eeg'];
+cfg.csv                     = [InPath Subject '\ActionExecution.csv']
 cfg.trialfun                = 'GraspingSegmentation';
 cfg.trialdef.prestim        = 0; % in seconds
 cfg.trialdef.poststim       = 1; % in seconds
