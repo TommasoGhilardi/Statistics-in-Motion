@@ -1,9 +1,9 @@
-function [Configuration] = RejectVisualCoding(Configuration)
+function [Configuration] = RejectVisualCoding(Configuration, file)
 
 % Read the CSV
 colnames  = {'BeginTime_msec','EndTime_msec','Duration_msec','Goodness',...
     'Annotations','ActionExecution'};
-T = readtable([InPath Subject '\ActionExecution.csv']);
+T = readtable(file);
 T.Properties.VariableNames = colnames;
 
 % Check if there is the same number of trials between videocoding and EEG data
