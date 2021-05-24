@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ANNOTATION_DOCUMENT AUTHOR="" DATE="2021-05-23T11:03:26+01:00"
+    FORMAT="3.0" VERSION="3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv3.0.xsd">
+    <HEADER MEDIA_FILE="" TIME_UNITS="milliseconds"/>
+    <TIME_ORDER/>
+    <TIER ANNOTATOR="Tommaso" DEFAULT_LOCALE="en"
+        LINGUISTIC_TYPE_REF="Acceptance" TIER_ID="Goodness"/>
+    <TIER ANNOTATOR="Tommaso" DEFAULT_LOCALE="en"
+        LINGUISTIC_TYPE_REF="Annotations" PARENT_REF="Goodness" TIER_ID="Annotations"/>
+    <TIER ANNOTATOR="Tommaso" DEFAULT_LOCALE="en"
+        LINGUISTIC_TYPE_REF="Execution" TIER_ID="ActionExecution"/>
+    <LINGUISTIC_TYPE CONTROLLED_VOCABULARY_REF="Acceptance"
+        GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Acceptance" TIME_ALIGNABLE="true"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="Symbolic_Association"
+        GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Annotations" TIME_ALIGNABLE="false"/>
+    <LINGUISTIC_TYPE CONTROLLED_VOCABULARY_REF="Action_Execution"
+        GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Execution" TIME_ALIGNABLE="true"/>
+    <LOCALE COUNTRY_CODE="GB" LANGUAGE_CODE="en"/>
+    <LANGUAGE LANG_DEF="http://cdb.iso.org/lg/CDB-00130975-001"
+        LANG_ID="und" LANG_LABEL="undetermined (und)"/>
+    <CONSTRAINT
+        DESCRIPTION="Time subdivision of parent annotation's time interval, no time gaps allowed within this interval" STEREOTYPE="Time_Subdivision"/>
+    <CONSTRAINT
+        DESCRIPTION="Symbolic subdivision of a parent annotation. Annotations refering to the same parent are ordered" STEREOTYPE="Symbolic_Subdivision"/>
+    <CONSTRAINT DESCRIPTION="1-1 association with a parent annotation" STEREOTYPE="Symbolic_Association"/>
+    <CONSTRAINT
+        DESCRIPTION="Time alignable annotations within the parent annotation's time interval, gaps are allowed" STEREOTYPE="Included_In"/>
+    <CONTROLLED_VOCABULARY CV_ID="Acceptance">
+        <DESCRIPTION LANG_REF="und">if a trial is good</DESCRIPTION>
+        <CV_ENTRY_ML CVE_ID="cveid_8be50f47-ab1a-4f8b-acc7-af7d657ddfea">
+            <CVE_VALUE LANG_REF="und">Accept</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_5f3f1382-d43f-4a14-823d-15e2ee5978ed">
+            <CVE_VALUE LANG_REF="und">Reject</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+    <CONTROLLED_VOCABULARY CV_ID="Action_Execution">
+        <DESCRIPTION LANG_REF="und">When infant is movign or not</DESCRIPTION>
+        <CV_ENTRY_ML CVE_ID="cveid_4288cb5a-75de-41b4-bc1e-68fba4772ef6">
+            <CVE_VALUE LANG_REF="und">Moving</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_8202e630-2694-46cc-93ad-91c4f5d381db">
+            <CVE_VALUE LANG_REF="und">Still</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+</ANNOTATION_DOCUMENT>
