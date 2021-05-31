@@ -33,8 +33,7 @@ defines the baseline trials. The other trials of interest are the 1s
 between the two actions when on the screen a still frame of the toybox
 is presented.
 
-![](media/image1.png){width="4.990947069116361in"
-height="1.303727034120735in"}
+![IMG](trials.jpg)
 
 **Goodness:** define if the trial is Accepted or Rejected. To be
 Accepted multiple conditions have to be met:
