@@ -39,6 +39,7 @@ is presented.
 Accepted multiple conditions have to be met:
 
 -   The infant should be looking at least to 75% of the trial (750ms)
+-   The infant should be looking at least to 500ms during witch the action (interaction with part of the toybox) is performed.
 
 -   The infant should not be performing any gross-motor movement.
     Fine-motor movement are defined as any movement/action that is
