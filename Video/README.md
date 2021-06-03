@@ -7,14 +7,12 @@ title: Coding Scheme Statistics in motion
 **Training Videos**
 -------------------
 
-**NotWatching**: code the DURATION (i.e. start and stop) during which
-the child is NOT looking into the direction of the webcam. More
-explicitly, this duration has to be at least 0.4 seconds long
- in order for it to be coded (shorter periods; looking
-away for only 0.2 seconds should not be included here). The
-start is when the child’s head/gaze is first outside of the range of
-being able to see the screen. The stop is the first frame that the
-child’s head/gaze is back in the range of being able to see the screen.
+**NotWatching**: Code when the infant is NOT looking to the direction of
+the screen. More explicitly, the infant should not be able to see the
+screen at all. The start is when the child’s head/gaze is first outside
+of the range of being able to see the screen. The stop is the first
+frame that the child’s head/gaze is back in the range of being able to
+see the screen.
 
 There could be multiple causes to the infant not watching: not paying
 attention, parent interference, moving, crying. This is not relevant for
@@ -33,14 +31,11 @@ is presented.
 
 ![IMG](trials.jpg)
 
-**Goodness:** define if the trial is Accepted or Rejected. To be
+**Goodness:** Define if the trial is Accepted or Rejected. To be
 Accepted multiple conditions have to be met:
 
--   The infant should be looking at least to 75% of the trial (750ms)
-
-
--	The infant should be looking at least to 500ms during witch the action (interaction with part of the toybox) is performed.
-
+-   The infant should be looking while the action (interaction with part
+    of the toybox) is performed.
 
 -   The infant should not be performing any gross-motor movement.
     Fine-motor movement are defined as any movement/action that is
@@ -57,11 +52,12 @@ Accepted multiple conditions have to be met:
 -   The child should not be pulling the cables or the cap during the
     trial
 
-**Annotations:** when a trial is rejected the reason of its rejection
+
+**Annotations:** When a trial is rejected the reason of its rejection
 should be reported.
 
 ### Action Execution
 
-**ActionExecution:** segment the data in 1s trials in which the infant
-is reaching and manipulating the toybox. If possible, code 1s trials in
-which the infant is not moving.
+**ActionExecution:** Segment the data in trials in which the infant is
+reaching and manipulating the toybox. If possible, code trials in which
+the infant is not moving.
