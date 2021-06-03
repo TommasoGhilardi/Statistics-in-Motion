@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ANNOTATION_DOCUMENT AUTHOR="" DATE="2021-05-23T11:03:26+01:00"
+<ANNOTATION_DOCUMENT AUTHOR="" DATE="2021-06-03T16:04:44+01:00"
     FORMAT="3.0" VERSION="3.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv3.0.xsd">
     <HEADER MEDIA_FILE="" TIME_UNITS="milliseconds"/>
@@ -13,7 +13,8 @@
     <LINGUISTIC_TYPE CONTROLLED_VOCABULARY_REF="Acceptance"
         GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Acceptance" TIME_ALIGNABLE="true"/>
     <LINGUISTIC_TYPE CONSTRAINTS="Symbolic_Association"
-        GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Annotations" TIME_ALIGNABLE="false"/>
+        CONTROLLED_VOCABULARY_REF="Notes" GRAPHIC_REFERENCES="false"
+        LINGUISTIC_TYPE_ID="Annotations" TIME_ALIGNABLE="false"/>
     <LINGUISTIC_TYPE CONTROLLED_VOCABULARY_REF="Action_Execution"
         GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Execution" TIME_ALIGNABLE="true"/>
     <LOCALE COUNTRY_CODE="GB" LANGUAGE_CODE="en"/>
@@ -42,6 +43,18 @@
         </CV_ENTRY_ML>
         <CV_ENTRY_ML CVE_ID="cveid_8202e630-2694-46cc-93ad-91c4f5d381db">
             <CVE_VALUE LANG_REF="und">Still</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+    <CONTROLLED_VOCABULARY CV_ID="Notes">
+        <DESCRIPTION LANG_REF="und">if a trial is good</DESCRIPTION>
+        <CV_ENTRY_ML CVE_ID="cveid_80b4e2c3-fb29-4f7c-a7a5-b67a60254b4b">
+            <CVE_VALUE LANG_REF="und">Movement</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_a7c206d3-e847-440d-83a8-7a5028a9da17">
+            <CVE_VALUE LANG_REF="und">NotLookingCue</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_2444b11f-7a61-4ff9-b176-b2c4c48e176c">
+            <CVE_VALUE LANG_REF="und">Other</CVE_VALUE>
         </CV_ENTRY_ML>
     </CONTROLLED_VOCABULARY>
 </ANNOTATION_DOCUMENT>
