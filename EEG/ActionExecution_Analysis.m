@@ -31,10 +31,8 @@ cap_conf = 'acticap-64ch-standard2.mat';
 %%%%% Segmenting definition %%%%%
 cfg                         = [];
 cfg.dataset                 = [InPath,Subject,'\' Subject '.eeg'];
-cfg.csv                     = [InPath Subject '\ActionExecution.csv']
+cfg.csv                     = [InPath Subject '\ActionExecution.csv'];
 cfg.trialfun                = 'GraspingSegmentation';
-cfg.trialdef.prestim        = 0; % in seconds
-cfg.trialdef.poststim       = 1; % in seconds
 cfg = ft_definetrial(cfg);
 
 %%%%% Read data and segment %%%%%
@@ -48,6 +46,11 @@ data = ft_preprocessing(cfg); % read raw data
 if isequal(data.label{end},'FP1')
     data.label{end} = 'Fp1';
 end
+
+%%%%% Segmenting trials in 1s not overlapping segments %%%%%
+cfg = [];
+cfg.length    = 1;
+data = ft_redefinetrial(cfg);
 
 %%%% Plot %%%%
 cfg = [];
