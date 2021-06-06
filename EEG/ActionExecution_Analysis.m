@@ -16,7 +16,7 @@ if ~exist([OutPath Subject], 'dir')
    mkdir([OutPath Subject '\Execution'])
 end
 
-SavingLocation = [OutPath Subject '\Prediction\'];
+SavingLocation = [OutPath Subject '\Execution\'];
 
 % Channels of interest definition
 Channels.motor     = {'C3','Cz','C4'};
@@ -98,13 +98,6 @@ cfg.component   = 1:2; % specify the layout file that should be used for plottin
 cfg.viewmode = 'component';
 ft_databrowser(cfg, components)
 
-
-% Control the components
-cfg = [];
-cfg.rejcomp  = reject;
-cfg.powscale = 'linear';
-cfg.layout   = cap_conf; % specify the layout file that should be used for plotting
-reject = ft_icabrowser(cfg, components);
 
 % Rejecting
 cfg             = [];
