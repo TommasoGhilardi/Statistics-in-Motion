@@ -56,3 +56,5 @@ Segment the data in trials in which the infant is reaching and manipulating the 
 Save the file as .etf and export it as *Tab-delimited Text* with .csv extension.\
 Use the name:
 -   CodingEEG.etf / CodingEEG.csv
+
+![IMG](ElanExport.jpg)

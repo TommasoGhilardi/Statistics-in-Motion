@@ -5,10 +5,14 @@
 addpath('C:\Users\krav\Documents\Matlab\fieldtrip');    % add fieltrip as your toolbox
 ft_defaults();      % set all the default fieltrip functions
 
+% Set script directory
+PATH = matlab.desktop.editor.getActiveFilename;
+cd(PATH(1:strfind(PATH,'Prediction_Analysis.m')-1));
+
 % Data Subject settings
-InPath  = 'C:\Users\krav\Desktop\BabyBrain\Internship\Monique\Data\Raw\';       %location of the participant data
-OutPath = 'C:\Users\krav\Desktop\BabyBrain\Internship\Monique\Data\Out\';
-Subject = 'p1';
+InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw data\';       %location of the participant data
+OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Out\';
+Subject = 'S_Stat_03';
 
 % Create output folder if it dosen't exist
 if ~exist([OutPath Subject], 'dir')
@@ -17,7 +21,7 @@ if ~exist([OutPath Subject], 'dir')
    mkdir([OutPath Subject '\Execution'])
 end
 
-SavingLocation = [OutPath Subject '\Execution\'];
+SavingLocation = [OutPath Subject '\Prediction\'];
 
 % Triggers specification
 Triggers.fixation_cross = 'S 50';
@@ -103,7 +107,6 @@ dlgtitle    = 'Input';
 dims        = [1 60];
 answer      = inputdlg(prompt,dlgtitle,dims);
 reject      = str2num(char(answer{1}));
-
 close all
 
 cfg = [];
@@ -111,14 +114,6 @@ cfg.layout = cap_conf;
 cfg.component   = 1:2; % specify the layout file that should be used for plotting
 cfg.viewmode = 'component';
 ft_databrowser(cfg, components)
-
-
-% Control the components
-cfg = [];
-cfg.rejcomp  = reject;
-cfg.powscale = 'linear';
-cfg.layout   = cap_conf; % specify the layout file that should be used for plotting
-reject = ft_icabrowser(cfg, components);
 
 % Rejecting
 cfg             = [];
@@ -152,7 +147,7 @@ cfg = [];
 cfg.reref      = 'yes';
 cfg.refmethod  = 'avg';
 cfg.refchannel = 'all';
-final_data = ft_preprocessing(cfg, data_orig);
+final_data = ft_preprocessing(cfg, art_final_data);
 
 % FFT decomposition
 cfg              = [];

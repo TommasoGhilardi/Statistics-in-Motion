@@ -4,6 +4,10 @@
 addpath('C:\Users\krav\Documents\Matlab\fieldtrip');    % add fieltrip as your toolbox
 ft_defaults();      % set all the default fieltrip functions
 
+% Set script directory
+PATH = matlab.desktop.editor.getActiveFilename;
+cd(PATH(1:strfind(PATH,'Prediction_Analysis.m')-1));
+
 % Data Subject settings
 InPath  = 'C:\Users\krav\Desktop\BabyBrain\Internship\Monique\Data\Raw\';       %location of the participant data
 OutPath = 'C:\Users\krav\Desktop\BabyBrain\Internship\Monique\Data\Out\';
@@ -31,7 +35,7 @@ cap_conf = 'acticap-64ch-standard2.mat';
 %%%%% Segmenting definition %%%%%
 cfg                         = [];
 cfg.dataset                 = [InPath,Subject,'\' Subject '.eeg'];
-cfg.csv                     = [InPath Subject '\ActionExecution.csv'];
+cfg.csv                     = [InPath Subject '\CodingEEG.csv'];
 cfg.trialfun                = 'GraspingSegmentation';
 cfg = ft_definetrial(cfg);
 
