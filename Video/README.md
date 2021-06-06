@@ -57,4 +57,4 @@ Save the file as .etf and export it as *Tab-delimited Text* with .csv extension.
 Use the name:
 -   CodingEEG.etf / CodingEEG.csv
 
-![IMG](ElanExport.jpg)
+![IMG](ElanExport.jpg | width=100)
