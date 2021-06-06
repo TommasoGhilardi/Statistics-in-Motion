@@ -6,12 +6,12 @@ ft_defaults();      % set all the default fieltrip functions
 
 % Set script directory
 PATH = matlab.desktop.editor.getActiveFilename;
-cd(PATH(1:strfind(PATH,'Prediction_Analysis.m')-1));
+cd(PATH(1:strfind(PATH,'ActionExecution_Analysis.m')-1));
 
 % Data Subject settings
-InPath  = 'C:\Users\krav\Desktop\BabyBrain\Internship\Monique\Data\Raw\';       %location of the participant data
-OutPath = 'C:\Users\krav\Desktop\BabyBrain\Internship\Monique\Data\Out\';
-Subject = 'p1';
+InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw data\';       %location of the participant data
+OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Out\';
+Subject = 'S_Stat_03';
 
 % Create output folder if it dosen't exist
 if ~exist([OutPath Subject], 'dir')
@@ -37,6 +37,7 @@ cfg                         = [];
 cfg.dataset                 = [InPath,Subject,'\' Subject '.eeg'];
 cfg.csv                     = [InPath Subject '\CodingEEG.csv'];
 cfg.trialfun                = 'GraspingSegmentation';
+cfg.trialdef.prestim        = 0; % in seconds
 cfg = ft_definetrial(cfg);
 
 %%%%% Read data and segment %%%%%
@@ -54,7 +55,7 @@ end
 %%%%% Segmenting trials in 1s not overlapping segments %%%%%
 cfg = [];
 cfg.length    = 1;
-data = ft_redefinetrial(cfg);
+data = ft_redefinetrial(cfg,data);
 
 %%%% Plot %%%%
 cfg = [];
@@ -93,7 +94,6 @@ dlgtitle    = 'Input';
 dims        = [1 60];
 answer      = inputdlg(prompt,dlgtitle,dims);
 reject      = str2num(char(answer{1}));
-
 close all
 
 cfg = [];
@@ -135,7 +135,7 @@ cfg = [];
 cfg.reref      = 'yes';
 cfg.refmethod  = 'avg';
 cfg.refchannel = 'all';
-final_data = ft_preprocessing(cfg, data_orig);
+final_data = ft_preprocessing(cfg, art_final_data);
 
 % FFT decomposition
 cfg              = [];
