@@ -27,7 +27,7 @@ defines the baseline trials. The other trials of interest are the 1s
 between the two actions when on the screen a still frame of the toybox
 is presented.
 
-![IMG](trials.jpg)
+<img src="https://github.com/TommasoGhilardi/Statistics-in-Motion/blob/main/Video/trials.jpg" width="900">
 
 #### **Goodness:**
 Define if the trial is Accepted or Rejected. To be
@@ -57,4 +57,4 @@ Save the file as .etf and export it as *Tab-delimited Text* with .csv extension.
 Use the name:
 -   CodingEEG.etf / CodingEEG.csv
 
-![IMG](ElanExport.jpg | width=100)
+<img src="https://github.com/TommasoGhilardi/Statistics-in-Motion/blob/main/Video/ElanExport.jpg" width="350">
