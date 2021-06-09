@@ -9,7 +9,7 @@ ft_defaults();      % set all the default fieltrip functions
 OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Out\';
 
 % Find all the data
-Files = dir([OutPath, '**\FFT.mat']);
+Files = dir([OutPath, '**\Execution\FFT.mat']);
 
 
 %% ========================% Read and concatenate the data %======================= %%
