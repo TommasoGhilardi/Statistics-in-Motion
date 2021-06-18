@@ -2,12 +2,14 @@
 %% ========================% Setting up %======================= %%
 
 % Fieltrip settings
-addpath('C:\Users\krav\Documents\Matlab\fieldtrip');    % add fieltrip as your toolbox
-ft_defaults();      % set all the default fieltrip functions
+if ~exist('ft_defaults', 'file')
+    addpath('C:\Users\krav\Documents\Matlab\fieldtrip');    % add fieltrip as your toolbox
+    ft_defaults();      % set all the default fieltrip functions
+end
 
 % Set script directory
 PATH = matlab.desktop.editor.getActiveFilename;
-cd(PATH(1:strfind(PATH,'Prediction_Analysis.m')-1));
+cd(PATH(1:strfind(PATH,'ActionPrediction_Analysis.m')-1));
 
 % Data Subject settings
 InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw data\';       %location of the participant data
@@ -29,14 +31,6 @@ Triggers.predictive_window.low           = {'S 11','S 21','S 31','S 41'};
 Triggers.predictive_window.medium        = {'S 12','S 22','S 32','S 42'};
 Triggers.predictive_window.high          = {'S 13','S 23','S 33','S 43'};
 Triggers.predictive_window.deterministic = {'S 14','S 24','S 34','S 44'};
-
-% Channels of interest definition
-Channels.motor     = {'C3','Cz','C4'};
-Channels.occipital = {'O1','Oz','O2'};
-
-% Frequencies
-Frequencies.value = [9 11; 17 20];
-Frequencies.names = ["alpha"; "beta"];
 
 % Cap configuration used to plot with layout
 cap_conf = 'acticap-64ch-standard2.mat';
@@ -64,6 +58,9 @@ cfg.lpfilter    = 'yes';        % enable low-pass filtering
 cfg.hpfreq      = 1;            % set up the frequency for high-pass filter
 cfg.lpfreq      = 40;
 cfg.detrend     = 'yes';
+cfg.reref       = 'yes';
+cfg.refmethod   = 'avg';
+cfg.refchannel  = 'all';
 data = ft_preprocessing(cfg); % read raw data
 
 if isequal(data.label{end},'FP1')
@@ -73,7 +70,7 @@ end
 %%%% Plot %%%%
 cfg = [];
 cfg.viewmode = 'vertical';
-a  =ft_databrowser(cfg, data);
+ft_databrowser(cfg, data);
 save([SavingLocation 'Epoched.mat'],'data');
 
 
@@ -137,71 +134,10 @@ cfg = [];
 cfg.method  = 'trial';
 cfg.keepchannel = 'nan';
 art_final_data = ft_rejectvisual(cfg,art2_data);
+
+art_final_data.subjetc = Subject;
 save([SavingLocation 'Clean.mat'],'art_final_data');
 
-
-%% ========================% Frequencies Extraction %======================= %%
-
-% Rereference to average of all channels
-cfg = [];
-cfg.reref      = 'yes';
-cfg.refmethod  = 'avg';
-cfg.refchannel = 'all';
-final_data = ft_preprocessing(cfg, art_final_data);
-
-% FFT decomposition
-cfg              = [];
-cfg.output       = 'pow';
-cfg.channel      = 'EEG';
-cfg.method       = 'mtmfft';
-cfg.taper        = 'hanning';
-cfg.pad          = 2;
-cfg.padtype      = 'mean';
-cfg.keeptrials   = 'yes';
-cfg.foi          = 2:1:30; % analysis 2 to 30 Hz in steps of 1 Hz
-Freq_data        = ft_freqanalysis(cfg, final_data);
-
-Freq_data.powspctrm = log10(Freq_data.powspctrm); %normalizing data using log10
-save([SavingLocation 'FFT.mat'],'Freq_data');
-
-%% ========================% CSV export %======================= %%
-
-Col_channels  = [];
-Col_power     = [];
-Col_trialinfo = [];
-Col_frequency = [];
-rep = length(Freq_data.powspctrm);
-
-for x = 1:length(Frequencies.names)
-
-    cfg = [];
-    cfg.frequency   = [Frequencies.value(x,1) Frequencies.value(x,2)] ;
-    cfg.avgoverfreq = 'yes';
-    cfg.channel     = [Channels.motor Channels.occipital];
-    avg = ft_selectdata(cfg, Freq_data) ;
-
-    Col_channels = [Col_channels; repmat( avg.label(1),rep,1);...
-        repmat( avg.label(2),rep,1);...
-        repmat( avg.label(3),rep,1);...
-        repmat( avg.label(4),rep,1);...
-        repmat( avg.label(5),rep,1);...
-        repmat( avg.label(6),rep,1)];
-
-    Col_power = [Col_power; avg.powspctrm(:,1); avg.powspctrm(:,1); avg.powspctrm(:,2);...
-        avg.powspctrm(:,3); avg.powspctrm(:,4); avg.powspctrm(:,5)];
-
-    Col_trialinfo = [Col_trialinfo; repmat(avg.trialinfo,length(avg.label),1)];
-    Col_frequency = [Col_frequency; repmat(Frequencies.names(x),rep*length(avg.label),1)];
-end
-Col_subject   = repmat(Subject,rep*length(avg.label)*2,1);
-
-Col_trialinfo = num2str(Col_trialinfo);
-Col_trialinfo = Col_trialinfo(:,2);
-
-CV = table(Col_subject, Col_frequency, Col_channels, Col_trialinfo, Col_power );
-CV.Properties.VariableNames = {'Id','Frequency','Channels','Trial','Power'};
-
-writetable(T,[SavingLocation 'DF.csv']);
 
 
 

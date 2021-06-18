@@ -7,8 +7,18 @@
 This script analyses the data to extract the frequenciy range desynchronised during the action execution phase.
 The script calls the function *GraspingSegmentation.m* that reads the csv of the video coding, synch the video to the first fization cross and segment the data.
 
+### ActionExecution_Frequencies_Extractor.m
+This script extract the frequency powerspectrum of the action execution phase
+
+### Plot_Frequencies.m 
+This script combines all the action execution frequencies files and the fixation crosss of the action prediction.
+The two powerspectrums are then plotted to explore the mu frequency suppressed during action execution.
+
 
 
 
 ### ActionPrediction_Analysis.m
 This script analyses the data in the frequency range extracted from the execution phase. The scripts calls *RejectVisualCoding.m* that allow to reject epochs based on the  vido codding of the session.
+
+### ActionPrediction_Frequencies_Extractor.m
+This script extract the frequency powerspectrum of the action prediction phase.

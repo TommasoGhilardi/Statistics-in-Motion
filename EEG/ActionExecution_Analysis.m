@@ -1,8 +1,10 @@
 %% ========================% Setting up %======================= %%
 
 % Fieltrip settings
-addpath('C:\Users\krav\Documents\Matlab\fieldtrip');    % add fieltrip as your toolbox
-ft_defaults();      % set all the default fieltrip functions
+if ~exist('ft_defaults', 'file')
+    addpath('C:\Users\krav\Documents\Matlab\fieldtrip');    % add fieltrip as your toolbox
+    ft_defaults();      % set all the default fieltrip functions
+end
 
 % Set script directory
 PATH = matlab.desktop.editor.getActiveFilename;
@@ -21,10 +23,6 @@ if ~exist([OutPath Subject], 'dir')
 end
 
 SavingLocation = [OutPath Subject '\Execution\'];
-
-% Channels of interest definition
-Channels.motor     = {'C3','Cz','C4'};
-Channels.occipital = {'O1','Oz','O2'};
 
 % Cap configuration used to plot with layout
 cap_conf = 'acticap-64ch-standard2.mat';
@@ -46,6 +44,9 @@ cfg.lpfilter    = 'yes';        % enable low-pass filtering
 cfg.hpfreq      = 1;            % set up the frequency for high-pass filter
 cfg.lpfreq      = 40;
 cfg.detrend     = 'yes';
+cfg.reref       = 'yes';
+cfg.refmethod   = 'avg';
+cfg.refchannel  = 'all';
 data = ft_preprocessing(cfg); % read raw data
 
 if isequal(data.label{end},'FP1')
@@ -125,31 +126,9 @@ cfg = [];
 cfg.method  = 'trial';
 cfg.keepchannel = 'nan';
 art_final_data = ft_rejectvisual(cfg,art2_data);
+
+final_data.subjetc = Subject;
 save([SavingLocation 'Clean.mat'],'art_final_data');
 
-
-%% ========================% Frequencies Extraction %======================= %%
-
-% Rereference to average of all channels
-cfg = [];
-cfg.reref      = 'yes';
-cfg.refmethod  = 'avg';
-cfg.refchannel = 'all';
-final_data = ft_preprocessing(cfg, art_final_data);
-
-% FFT decomposition
-cfg              = [];
-cfg.output       = 'pow';
-cfg.channel      = 'EEG';
-cfg.method       = 'mtmfft';
-cfg.taper        = 'hanning';
-cfg.pad          = 2;
-cfg.padtype      = 'mean';
-cfg.keeptrials   = 'yes';
-cfg.foi          = 2:1:30; % analysis 2 to 30 Hz in steps of 1 Hz
-Freq_data        = ft_freqanalysis(cfg, final_data);
-
-Freq_data.powspctrm = log10(Freq_data.powspctrm); %normalizing data using log10
-save([SavingLocation 'FFT.mat'],'Freq_data');
 
 
