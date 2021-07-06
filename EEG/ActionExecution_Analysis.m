@@ -44,9 +44,6 @@ cfg.lpfilter    = 'yes';        % enable low-pass filtering
 cfg.hpfreq      = 1;            % set up the frequency for high-pass filter
 cfg.lpfreq      = 40;
 cfg.detrend     = 'yes';
-cfg.reref       = 'yes';
-cfg.refmethod   = 'avg';
-cfg.refchannel  = 'all';
 data = ft_preprocessing(cfg); % read raw data
 
 if isequal(data.label{end},'FP1')
