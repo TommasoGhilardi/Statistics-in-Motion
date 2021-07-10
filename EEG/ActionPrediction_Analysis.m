@@ -3,7 +3,7 @@
 
 % Fieltrip settings
 if ~exist('ft_defaults', 'file')
-    addpath('C:\Users\krav\Documents\Matlab\fieldtrip');    % add fieltrip as your toolbox
+    addpath('C:\Users\moniq\Documents\Psychologie\Master Gezondheidszorgpsychologie\Scriptie\Matlab\fieldtrip-20210603\fieldtrip-20210603');    % add fieltrip as your toolbox
     ft_defaults();      % set all the default fieltrip functions
 end
 
@@ -12,9 +12,9 @@ PATH = matlab.desktop.editor.getActiveFilename;
 cd(PATH(1:strfind(PATH,'ActionPrediction_Analysis.m')-1));
 
 % Data Subject settings
-InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw data\';       %location of the participant data
-OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Out\';
-Subject = 'S_Stat_03';
+InPath  = 'C:\Users\moniq\surfdrive\Shared\Monique_Infant_EEG\RawData\';       %location of the participant data
+OutPath = 'C:\Users\moniq\surfdrive\Shared\Monique_Infant_EEG\Processed\';
+Subject = 'S_Stat_04';
 
 % Create output folder if it dosen't exist
 if ~exist([OutPath Subject], 'dir')
@@ -40,6 +40,7 @@ cap_conf = 'acticap-64ch-standard2.mat';
 
 %%%%% Segmenting definition %%%%%
 cfg                         = [];
+cfg.sub                     = Subject;
 cfg.dataset                 = [InPath,Subject,'\' Subject '.eeg'];
 cfg.trialdef.eventtype      = 'Stimulus';
 cfg.trialdef.eventvalue     = [Triggers.predictive_window.low,...
@@ -50,7 +51,7 @@ cfg.trialdef.poststim       = 1; % in seconds
 cfg = ft_definetrial(cfg);
 
 %%%%% Reject the trials that were excluded with videocoding %%%%%
-cfg = RejectVisualCoding(cfg, [InPath Subject '\ActionExecution.csv']);
+cfg = RejectVisualCoding(cfg, [InPath Subject '\CodingEEG.csv']);
 
 %%%%% Read data and segment %%%%%
 cfg.hpfilter    = 'yes';        % enable high-pass filtering
@@ -58,6 +59,9 @@ cfg.lpfilter    = 'yes';        % enable low-pass filtering
 cfg.hpfreq      = 1;            % set up the frequency for high-pass filter
 cfg.lpfreq      = 40;
 cfg.detrend     = 'yes';
+cfg.reref       = 'yes';
+cfg.refmethod   = 'avg';
+cfg.refchannel  = 'all';
 data = ft_preprocessing(cfg); % read raw data
 
 if isequal(data.label{end},'FP1')

@@ -2,7 +2,7 @@
 
 % Fieltrip settings
 if ~exist('ft_defaults', 'file')
-    addpath('C:\Users\krav\Documents\Matlab\fieldtrip');    % add fieltrip as your toolbox
+    addpath('C:\Users\moniq\Documents\Psychologie\Master Gezondheidszorgpsychologie\Scriptie\Matlab\fieldtrip-20210603\fieldtrip-20210603');    % add fieltrip as your toolbox
     ft_defaults();      % set all the default fieltrip functions
 end
 
@@ -11,9 +11,9 @@ PATH = matlab.desktop.editor.getActiveFilename;
 cd(PATH(1:strfind(PATH,'ActionExecution_Analysis.m')-1));
 
 % Data Subject settings
-InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw data\';       %location of the participant data
-OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Out\';
-Subject = 'S_Stat_03';
+InPath  = 'C:\Users\moniq\surfdrive\Shared\Monique_Infant_EEG\RawData\';       %location of the participant data
+OutPath = 'C:\Users\moniq\surfdrive\Shared\Monique_Infant_EEG\Processed';
+Subject = 'S_Stat_19';
 
 % Create output folder if it dosen't exist
 if ~exist([OutPath Subject], 'dir')
@@ -32,6 +32,7 @@ cap_conf = 'acticap-64ch-standard2.mat';
 
 %%%%% Segmenting definition %%%%%
 cfg                         = [];
+cfg.sub                     = Subject;
 cfg.dataset                 = [InPath,Subject,'\' Subject '.eeg'];
 cfg.csv                     = [InPath Subject '\CodingEEG.csv'];
 cfg.trialfun                = 'GraspingSegmentation';
@@ -44,6 +45,9 @@ cfg.lpfilter    = 'yes';        % enable low-pass filtering
 cfg.hpfreq      = 1;            % set up the frequency for high-pass filter
 cfg.lpfreq      = 40;
 cfg.detrend     = 'yes';
+cfg.reref       = 'yes';
+cfg.refmethod   = 'avg';
+cfg.refchannel  = 'all';
 data = ft_preprocessing(cfg); % read raw data
 
 if isequal(data.label{end},'FP1')
