@@ -3,12 +3,12 @@
 
 % Fieltrip settings
 if ~exist('ft_defaults', 'file')
-    addpath('C:\Users\krav\Documents\Matlab\fieldtrip');    % add fieltrip as your toolbox
+    addpath('C:\Users\moniq\Documents\Psychologie\Master Gezondheidszorgpsychologie\Scriptie\Matlab\fieldtrip-20210603\fieldtrip-20210603');    % add fieltrip as your toolbox
     ft_defaults();      % set all the default fieltrip functions
 end
 
 % Data Subject settings
-Path = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Out\';
+Path = 'C:\Users\moniq\surfdrive\Shared\Monique_Infant_EEG\Processed\';
 
 % Find all the data
 Files = dir([Path, '**\Prediction\FFT.mat']);
@@ -19,8 +19,8 @@ Channels.occipital = {'O1','Oz','O2'};
 
 % Frequencies
 % Define the frequencies from action execution phase
-Frequencies.value = [9 11; 17 20];
-Frequencies.names = ["alpha"; "beta"];
+Frequencies.value = [7 9];
+Frequencies.names = ["mu"];
 
 
 %% Extract Frequencies
@@ -30,13 +30,14 @@ for file  =  1:length(Files)
     Subject = Freq_data.subject;
     Freq_data = rmfield(Freq_data,'subject');
     
+    % Normalize data
+    Freq_data.powspctrm = log10(Freq_data.powspctrm); %normalizing data using log10
     
     %% ========================% CSV export %======================= %%
     Col_channels  = [];
     Col_power     = [];
     Col_trialinfo = [];
     Col_frequency = [];
-    rep = length(Freq_data.powspctrm);
     
     for x = 1:length(Frequencies.names)
         
@@ -46,6 +47,9 @@ for file  =  1:length(Files)
         cfg.avgoverfreq = 'yes';
         cfg.channel     = [Channels.motor Channels.occipital];
         avg = ft_selectdata(cfg, Freq_data) ;
+        
+        rep = size(avg.powspctrm,1);
+        cha = size(avg.powspctrm,2);
         
         % Extraxt the values to table
         Col_channels = [Col_channels; repmat( avg.label(1),rep,1);...
@@ -61,7 +65,7 @@ for file  =  1:length(Files)
         Col_trialinfo = [Col_trialinfo; repmat(avg.trialinfo,length(avg.label),1)];
         Col_frequency = [Col_frequency; repmat(Frequencies.names(x),rep*length(avg.label),1)];
     end
-    Col_subject   = repmat(Subject,rep*length(avg.label)*2,1);
+    Col_subject   = repmat(Subject,rep*cha,1);
 
     Col_trialinfo = num2str(Col_trialinfo);
     Col_trialinfo = Col_trialinfo(:,2);
@@ -72,7 +76,7 @@ for file  =  1:length(Files)
     writetable(CV,[Files(file).folder '\DF.csv']);
     
     % Clean for next subject
-    clear Freq_data CV Freq_data Subject  
+    clear Freq_data CV Freq_data Subject avg
     clear Col*
     
 end

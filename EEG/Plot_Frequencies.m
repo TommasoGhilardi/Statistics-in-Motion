@@ -8,10 +8,10 @@ if ~exist('ft_defaults', 'file')
 end
 
 % Data Subject settings
-Path = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Out\';
+Path = 'C:\Users\krav\surfdrive\Monique_Infant_EEG\Processed\';
 
 % Channels of interest definition
-Channels.motor     = {'C3','Cz','C4'};
+Channels.motor = {'C3','Cz','C4'};
 
 
 %% Execution data concatenation
@@ -22,26 +22,23 @@ Files = dir([Path, '**\Execution\FFT.mat']);
 % Read and concatenate the data 
 for file  =  1:length(Files)
     load([Files(file).folder,'\FFT.mat' ]);
-    
-    % select data
+
     cfg = [];
     cfg.channel = Channels.motor;
     cfg.avgoverrpt  = 'yes';
     cfg.nanmean     = 'yes';
     cfg.avgoverchan = 'yes';
 
-    dat = ft_selectdata(cfg, Freq_data);
+    dat(file) = ft_selectdata(cfg, Freq_data);
     
-    if exist('EX', 'var')
-        cfg = [];
-        EX = ft_appendfreq(cfg, EX, dat);
-    else
-        EX = dat;
-    end
-    clear Freq_data dat
-    
+    clear Freq_data
 end
-clear Files
+
+% Select subjects you want to include
+cfg = [];
+EX  = ft_appendfreq(cfg, dat(1), dat(2), dat(3), dat(4), dat(5), dat(6), dat(7), dat(9));
+
+clear Files dat
 
 
 %% Prediction (fixation cross) data concatenation
@@ -52,25 +49,25 @@ Files = dir([Path, '**\Prediction\FFT.mat']);
 % Read and concatenate the data 
 for file  =  1:length(Files)
     load([Files(file).folder,'\FFT.mat' ]);
-    
-    % select data
+
+    Freq_data = rmfield(Freq_data,"subject" );
+
     cfg = [];
-    cfg.trials      = find(Freq_data.trialinfo == 50);
+    cfg.channel = Channels.motor;
     cfg.avgoverrpt  = 'yes';
-    cfg.channel     = Channels.motor;
-    cfg.avgoverchan = 'yes';
     cfg.nanmean     = 'yes';
-    dat = ft_selectdata(cfg, Freq_data);
+    cfg.avgoverchan = 'yes';
+
+    dat(file) = ft_selectdata(cfg, Freq_data);
     
-    if exist('BA', 'var')
-        cfg = [];
-        BA = ft_appendfreq(cfg, BA, dat);
-    else
-        BA = dat;
-    end
-    clear Freq_data dat
-    
+    clear Freq_data
 end
+
+% Select subjects you want to include
+cfg = [];
+BA  = ft_appendfreq(cfg, dat(1), dat(2), dat(3), dat(5), dat(6), dat(7), dat(8), dat(9), dat(10),dat(11));
+
+clear Files dat
 
 
 %% Plot the data
@@ -91,23 +88,22 @@ plot(2:30, EX_M,'LineWidth',2,'Color',[0.85,0.33,0.10])
 plot(2:30, BA_M,'LineWidth',2,'Color',[0.00,0.45,0.74])
 legend('Execution','Baseline')
 xlim([2,30]);
-ylim([-0.7,2.9])
+ylim([-5,60])
 
 
 % Extract peaks
-difference = EX_M-BA_M;
+difference = BA_M-EX_M;
 
-[pks,locs,widths,proms] = findpeaks(-difference);
-Xpeaks = locs(locs<13 & locs>6);
-Ypeaks = pks(locs<13 & locs>6);
+[pks,locs,widths,proms] = findpeaks(difference);
+Xpeaks = locs(locs<11 & locs>6);
+Ypeaks = pks(locs<11 & locs>6);
 
 % Plot difference
 subplot(2,1,2);
 hold on
 plot(2:30,difference,'LineWidth',2,'color', 'k')
-plot(Xpeaks+1,-Ypeaks,'o','MarkerSize',8,'LineWidth',2, 'color', 'r')
+plot(Xpeaks+1,Ypeaks,'o','MarkerSize',8,'LineWidth',2, 'color', 'r')
 legend('Difference')
 xlim([2,30]);
-
 
 
