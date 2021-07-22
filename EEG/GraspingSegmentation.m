@@ -29,7 +29,7 @@ trl = [];
 trl(:,1) = round(Movements{:,'BeginTime_msec'}*hdr.Fs + FirstFixation);
 trl(:,2) = round(Movements{:,'EndTime_msec'}*hdr.Fs + FirstFixation);
 trl(:,3) = -round(cfg.trialdef.prestim * hdr.Fs);
-
+trl(trl(:,1)> hdr.nSamples,:)=[];
 trl(trl(:,2)> hdr.nSamples,2)=hdr.nSamples;
 end
 
