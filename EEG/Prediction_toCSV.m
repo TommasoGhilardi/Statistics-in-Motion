@@ -8,10 +8,11 @@ if ~exist('ft_defaults', 'file')
 end
 
 % Data Subject settings
-Path = 'C:\Users\moniq\surfdrive\Shared\Monique_Infant_EEG\Processed\';
+RawPath       = 'C:\Users\krav\surfdrive\Jule_Infant_EEG\RawData\';
+ProcessedPath = 'C:\Users\krav\surfdrive\Jule_Infant_EEG\Processed\';
 
 % Find all the data
-Files = dir([Path, '**\Prediction\FFT.mat']);
+Files = dir([ProcessedPath, '**\Prediction\FFT.mat']);
 
 % Channels of interest definition
 Channels.motor     = {'C3','Cz','C4'};
@@ -70,10 +71,14 @@ for file  =  1:length(Files)
     Col_trialinfo = num2str(Col_trialinfo);
     Col_trialinfo = Col_trialinfo(:,2);
 
-    CV = table(Col_subject, Col_frequency, Col_channels, Col_trialinfo, Col_power );
-    CV.Properties.VariableNames = {'Id','Frequency','Channels','Trial','Power'};
+    % Video training extraction
+    Watched      = VideoWatching(ProcessedPath, Subject);
+    Col_training = repmat(Watched,rep*cha,1);
+    
+    CV = table(Col_subject, Col_frequency, Col_channels, Col_trialinfo, Col_training, Col_power );
+    CV.Properties.VariableNames = {'Id','Frequency','Channels','Trial','Training','Power'};
 
-    writetable(CV,[Files(file).folder '\DF.csv']);
+%     writetable(CV,[Files(file).folder '\DF.csv']);
     
     % Clean for next subject
     clear Freq_data CV Freq_data Subject avg
