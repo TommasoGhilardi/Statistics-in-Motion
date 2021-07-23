@@ -36,7 +36,7 @@ end
 
 % Select subjects you want to include
 cfg = [];
-EX  = ft_appendfreq(cfg, dat(1), dat(2), dat(3), dat(4), dat(5), dat(6), dat(7), dat(9));
+EX  = ft_appendfreq(cfg, dat(1), dat(2), dat(3), dat(4) );
 
 clear Files dat
 
@@ -65,7 +65,7 @@ end
 
 % Select subjects you want to include
 cfg = [];
-BA  = ft_appendfreq(cfg, dat(1), dat(2), dat(3), dat(5), dat(6), dat(7), dat(8), dat(9), dat(10),dat(11));
+BA  = ft_appendfreq(cfg, dat(1), dat(2), dat(3), dat(5), dat(6), dat(7), dat(8));
 
 clear Files dat
 
@@ -95,8 +95,8 @@ ylim([-5,60])
 difference = BA_M-EX_M;
 
 [pks,locs,widths,proms] = findpeaks(difference);
-Xpeaks = locs(locs<11 & locs>6);
-Ypeaks = pks(locs<11 & locs>6);
+Xpeaks = locs( locs>6 & locs<30);
+Ypeaks = pks(locs>6 & locs<30);
 
 % Plot difference
 subplot(2,1,2);
