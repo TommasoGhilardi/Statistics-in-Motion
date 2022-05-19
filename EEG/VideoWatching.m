@@ -1,34 +1,56 @@
  
  
-function [value] = VideoWatching(PATH, sub)
+function [value] = VideoWatching( sub)
 
 
 %% Settings
-maximum = 511.2;
+maximum = (533+2.5)*1000;
+coded = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Video_recordings\test.csv';
+watched = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Video_recordings\TrainingQuantification.csv';
+
+%% Import the videocoding
+
+colnamesT  = {'BeginTime_msec','EndTime_msec','Duration_msec','NotWatching',...
+    'File','Path'};
+
+
+T = readtable(coded, 'Delimiter',',','ReadVariableNames',false);
+T.Properties.VariableNames = colnamesT;
+T_Subject = T(contains(T{:, 'Path'}, sub),:); %select specific subject
+
+
+%% Import the Duration of watching
+
+colnamesW= {'ID','Set','Consent1','Consent2','Consent3','additional info','Good session','Coders','Done',...
+    'Sum_training','Training'};
+W = readtable(watched, 'Delimiter',',','ReadVariableNames',false);
+W.Properties.VariableNames = colnamesW;
+
+W = W(contains(W{:, 'ID'}, sub),:); %select specific subject
+amount_watched = str2num( cell2mat(W{:,'Training'}))*1000;
+
+
+%% Percentage
+
+Unique = unique(T_Subject{:,'Path'});
+
 tot = [];
-percentage = [];
+percentage = [0,0,0];
+for fil = 1:length(Unique)
 
+    t = T_Subject(contains(T_Subject{:, 'Path'}, Unique(fil)),:); %select specific subject
 
-%% Find and read videos
-Videos = dir([PATH, sub, '\CodingTraining_d*']);
-
-for x  =  1:length(Videos)
-    
-    vid = [Videos(x).folder '\' Videos(x).name];
-    T = readtable(vid, 'Delimiter', ',');
-    
-    amount =  maximum - sum(T{:,3});
+    amount =  amount_watched(fil) - sum(t{:,'Duration_msec'});
     
     % Health check
-    percentage = [percentage, amount/maximum*100];
+    percentage(fil) = amount/maximum*100;
     
     tot = [tot, amount]; 
-    
 end
 
-percentage(3) = 0;
-if sum(percentage< 20) > 2
-    warning(['Subejct ' sub ' has watched less than 20% more than 2 times!!  Probably need rejection']);
+
+if sum(percentage< 20) >= 2
+    warning(['Subject ' sub ' has watched less than 20% more than 2 times!!  Probably need rejection']);
 end
 
 
@@ -36,6 +58,4 @@ value = sum(tot)/(maximum*3)*100;
 
 
 end
-
-
 

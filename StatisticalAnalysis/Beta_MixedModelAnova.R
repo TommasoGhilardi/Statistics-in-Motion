@@ -1,14 +1,17 @@
 
 
 # Libraries ---------------------------------------------------------------
-library(brms)
+library(lme4)
+library(lmerTest)
 library(fitdistrplus)
 library(ggplot2)
 library(performance)
 library(modelbased)
-library(bayestestR)
 library(report)
 
+options(contrasts = c("contr.sum","contr.poly"))
+
+# Theme ---------------------------------------------------------------
 
 Palette1 = c("#3f6d9b", "#6e8dab", "#cccccc")
 Palette2<- c("#a00000","#dc2c25","#f35c40")
@@ -36,6 +39,9 @@ for (file in files[2:length(files)])
   db = read.csv(file, header=TRUE, sep=",")
   DF = rbind(DF,db)
 }
+
+DF = DF[(DF$Frequency=='beta'),]
+
 
 ## Setting factors
 DF$Id        = factor(DF$Id) 
@@ -74,24 +80,50 @@ plot(fitdist(DF$Power, "norm"))
 
 # Motor Analysis ---------------------------------------------------------------
 
-Motor = DF[(DF$Channels == 'C3' | DF$Channels == 'Cz' | DF$Channels == 'C4')  ,]
+Motor = DF[(DF$Channels == 'C3' | DF$Channels == 'Cz' | DF$Channels == 'C4'),]
 Motor$Training = scale(Motor$Training,scale=FALSE)
 
 
-LmMotor = brm(Power ~ Trial:Frequency+ Training + (1|Id/Channels), data= Motor,family = gaussian(),
-              iter = 1000 + 3000, warmup = 1000,control = list(adapt_delta = 0.99),sample_prior = TRUE)
-pp_check(LmMotor)
-
-conditional_effects(LmMotor, points= TRUE)
-
-
-
-check_normality(LmMotor)
+LmMotor = lmer(Power ~ Trial + scale(Training,scale=FALSE)   + (1|Id/Channels), data= Motor)
+check_model(LmMotor)
 
 summary(LmMotor)
 
+## Check main effects as anova
+AnMotor = anova(LmMotor)
+AnMotor
+
+# Contrast
+estimate_contrasts(LmMotor)
+
+report(LmMotor)
+report(AnMotor)
+
+#### Plot
+Anova_motor <- ggplot(Motor, aes(Trial, Power)) +
+  stat_summary(fun = mean, geom = "bar",colour='black' ,fill = Palette1[1],width=0.5, alpha =seq(0.4, 1, by=0.15))+
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2)+
+  labs(title="Probability - Motor Area",x="\nProbability",y="Beta log(Power)\n")+
+  geom_hline(yintercept=0)+
+  My_Theme + theme(legend.position = "none")+
+  scale_x_discrete(labels=c("Baseline","25%","50%","75%","100%"))
+Anova_motor
+
+ggsave(paste(Directory,"Anova_Probability_motor_Beta.png",sep=''),
+       width = 28, height = 28, units = "cm", dpi="retina")
 
 
 
+# Motor Analysis continuos ---------------------------------------------------------------
 
+MotorCon = DF[(DF$Channels == 'C3' | DF$Channels == 'Cz' | DF$Channels == 'C4' & DF$Trial != 0),]
+MotorCon = Motor[Motor$Trial != 0,]
 
+MotorCon$Trial = as.numeric(MotorCon$Trial)
+MotorCon$Trial = scale(MotorCon$Trial, center = TRUE, scale = FALSE)
+MotorCon$Training = scale(MotorCon$Training,scale=FALSE)
+
+LmMotorCon = lmer(Power ~ Trial + Training   + (1|Id/Channels), data= MotorCon)
+check_model(LmMotorCon)
+
+summary(LmMotorCon)

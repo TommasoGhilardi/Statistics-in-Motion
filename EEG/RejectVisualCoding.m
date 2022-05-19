@@ -1,13 +1,17 @@
+
 function [Configuration] = RejectVisualCoding(Configuration, file)
 
 % Read the CSV
 colnames  = {'BeginTime_msec','EndTime_msec','Duration_msec','Goodness',...
-    'Annotations','ActionExecution'};
+    'Annotations','ActionExecution','File','File Path'};
+
 T = readtable(file, 'Delimiter',',','ReadVariableNames',false);
 T.Properties.VariableNames = colnames;
+T_Subject = T(contains(T{:, 'File Path'}, Subject),:); %select specific subject
+
 
 % Check if there is the same number of trials between videocoding and EEG data
-Trials = T(ismember( T{:,'Goodness'}, {'Accept', 'Reject'}),:);
+Trials = T_Subject(ismember( T_Subject{:,'Goodness'}, {'Accept', 'Reject'}),:);
 
 %workaround given by starting recording after EEG
 if Configuration.sub == "S_Stat_04"

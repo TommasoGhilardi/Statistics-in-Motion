@@ -1,19 +1,13 @@
 %% ========================% Setting up %======================= %%
 
-% Fieltrip settings
-if ~exist('ft_defaults', 'file')
-    addpath('C:\Users\moniq\Documents\Psychologie\Master Gezondheidszorgpsychologie\Scriptie\Matlab\fieldtrip-20210603\fieldtrip-20210603');    % add fieltrip as your toolbox
-    ft_defaults();      % set all the default fieltrip functions
-end
-
 % Set script directory
 PATH = matlab.desktop.editor.getActiveFilename;
 cd(PATH(1:strfind(PATH,'ActionExecution_Analysis.m')-1));
 
 % Data Subject settings
-InPath  = 'C:\Users\krav\surfdrive\Monique_Infant_EEG\RawData\';       %location of the participant data
-OutPath = 'C:\Users\krav\surfdrive\Monique_Infant_EEG\Processed\';
-Subject = 'S_Stat_11';
+InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw\';       %location of the participant data
+OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
+Subject = 'S_Stat_08';
 
 % Create output folder if it dosen't exist
 if ~exist([OutPath Subject], 'dir')
@@ -34,7 +28,8 @@ cap_conf = 'acticap-64ch-standard2.mat';
 cfg                         = [];
 cfg.sub                     = Subject;
 cfg.dataset                 = [InPath,Subject,'\' Subject '.eeg'];
-cfg.csv                     = [InPath Subject '\CodingEEG.csv'];
+cfg.csv                     = [InPath 'videocoding_EEG.csv'];
+cfg.sub                     =  Subject;
 cfg.trialfun                = 'GraspingSegmentation';
 cfg.trialdef.prestim        = 0; % in seconds
 cfg = ft_definetrial(cfg);
@@ -45,9 +40,8 @@ cfg.lpfilter    = 'yes';        % enable low-pass filtering
 cfg.hpfreq      = 1;            % set up the frequency for high-pass filter
 cfg.lpfreq      = 40;
 cfg.detrend     = 'yes';
-cfg.reref = 'yes';
-cfg.refmethod = 'avg';
-cfg.refchannel = 'all';
+cfg.demean      = 'yes';  
+
 data = ft_preprocessing(cfg); % read raw data
 
 if isequal(data.label{end},'FP1')
@@ -128,7 +122,15 @@ cfg.method  = 'trial';
 cfg.keepchannel = 'nan';
 art_final_data = ft_rejectvisual(cfg,art2_data);
 
-final_data.subjetc = Subject;
+
+% Rereferencing to average
+cfg = [];
+cfg.reref = 'yes';
+cfg.refmethod = 'avg';
+cfg.refchannel = 'all';
+art_final_data = ft_preprocessing(cfg, art_final_data);
+
+art_final_data.subjetc = Subject;
 save([SavingLocation 'Clean.mat'],'art_final_data');
 
 

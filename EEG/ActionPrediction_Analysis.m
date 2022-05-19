@@ -1,19 +1,13 @@
 
 %% ========================% Setting up %======================= %%
 
-% Fieltrip settings
-if ~exist('ft_defaults', 'file')
-    addpath('C:\Users\moniq\Documents\Psychologie\Master Gezondheidszorgpsychologie\Scriptie\Matlab\fieldtrip-20210603\fieldtrip-20210603');    % add fieltrip as your toolbox
-    ft_defaults();      % set all the default fieltrip functions
-end
-
 % Set script directory
 PATH = matlab.desktop.editor.getActiveFilename;
 cd(PATH(1:strfind(PATH,'ActionPrediction_Analysis.m')-1));
 
 % Data Subject settings
-InPath  = 'C:\Users\krav\surfdrive\Monique_Infant_EEG\RawData\';       %location of the participant data
-OutPath = 'C:\Users\krav\surfdrive\Monique_Infant_EEG\Processed\';
+InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw\';       %location of the participant data
+OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
 Subject = 'S_Stat_06';
 
 % Create output folder if it dosen't exist
@@ -51,7 +45,7 @@ cfg.trialdef.poststim       = 1; % in seconds
 cfg = ft_definetrial(cfg);
 
 %%%%% Reject the trials that were excluded with videocoding %%%%%
-cfg = RejectVisualCoding(cfg, [InPath Subject '\CodingEEG.csv']);
+% cfg = RejectVisualCoding(cfg, [InPath 'videocoding_EEG.csv']);
 
 %%%%% Read data and segment %%%%%
 cfg.hpfilter    = 'yes';        % enable high-pass filtering
@@ -83,7 +77,7 @@ cfg.metric      = 'kurtosis';  % use by default kurtosis method
 cfg.method      = 'summary'; % use by default summary method
 cfg.keepchannel = 'nan';
 art1_data       = ft_rejectvisual(cfg,data);
-
+save([SavingLocation 'Summary1.mat'],'art1_data');
 
 %%%%% ICA %%%%%
 cfg             = [];
@@ -109,9 +103,10 @@ close all
 
 cfg = [];
 cfg.layout = cap_conf;
-cfg.component   = 1:2; % specify the layout file that should be used for plotting
+cfg.component   = {'runica001'};
 cfg.viewmode = 'component';
 ft_databrowser(cfg, components)
+
 
 % Rejecting
 cfg             = [];
@@ -129,12 +124,22 @@ cfg.metric      = 'kurtosis';  % use by default kurtosis method
 cfg.method      = 'summary'; % use by default summary method
 cfg.keepchannel = 'nan';
 art2_data = ft_rejectvisual(cfg,ica_data);
+save([SavingLocation 'Summary2.mat'],'art2_data');
+
 
 % Trial rejection
 cfg = [];
 cfg.method  = 'trial';
 cfg.keepchannel = 'nan';
 art_final_data = ft_rejectvisual(cfg,art2_data);
+
+
+% Rereferencing to average
+cfg = [];
+cfg.reref = 'yes';
+cfg.refmethod = 'avg';
+cfg.refchannel = 'all';
+art_final_data = ft_preprocessing(cfg, art_final_data);
 
 art_final_data.subjetc = Subject;
 save([SavingLocation 'Clean.mat'],'art_final_data');

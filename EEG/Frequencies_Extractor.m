@@ -1,14 +1,8 @@
 
 %% ========================% Setting up %======================= %%
 
-% Fieltrip settings
-if ~exist('ft_defaults', 'file')
-    addpath('C:\Users\moniq\Documents\Psychologie\Master Gezondheidszorgpsychologie\Scriptie\Matlab\fieldtrip-20210603\fieldtrip-20210603');    % add fieltrip as your toolbox
-    ft_defaults();      % set all the default fieltrip functions
-end
-
 % Data Subject settings
-Path = 'C:\Users\moniq\surfdrive\Shared\Monique_Infant_EEG\Processed\';
+Path = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
 
 
 %% Frequencies extraction settings

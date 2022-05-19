@@ -20,8 +20,8 @@ Channels.occipital = {'O1','Oz','O2'};
 
 % Frequencies
 % Define the frequencies from action execution phase
-Frequencies.value = [7 9];
-Frequencies.names = ["mu"];
+Frequencies.value = [7 9; 14 18];
+Frequencies.names = ["mu", "beta"];
 
 
 %% Extract Frequencies
@@ -66,22 +66,22 @@ for file  =  1:length(Files)
         Col_trialinfo = [Col_trialinfo; repmat(avg.trialinfo,length(avg.label),1)];
         Col_frequency = [Col_frequency; repmat(Frequencies.names(x),rep*length(avg.label),1)];
     end
-    Col_subject   = repmat(Subject,rep*cha,1);
+    Col_subject   = repmat(Subject,rep*cha*length(Frequencies.names),1);
 
     Col_trialinfo = num2str(Col_trialinfo);
     Col_trialinfo = Col_trialinfo(:,2);
 
     % Video training extraction
-    Watched      = VideoWatching(ProcessedPath, Subject);
-    Col_training = repmat(Watched,rep*cha,1);
+    Watched      = VideoWatching(RawPath, Subject);
+    Col_training = repmat(Watched,rep*cha*length(Frequencies.names),1);
     
     CV = table(Col_subject, Col_frequency, Col_channels, Col_trialinfo, Col_training, Col_power );
     CV.Properties.VariableNames = {'Id','Frequency','Channels','Trial','Training','Power'};
 
-%     writetable(CV,[Files(file).folder '\DF.csv']);
+    writetable(CV,[Files(file).folder '\DF.csv']);
     
     % Clean for next subject
-    clear Freq_data CV Freq_data Subject avg
+    clear Freq_data CV Freq_data Subject avg Watched
     clear Col*
     
 end
