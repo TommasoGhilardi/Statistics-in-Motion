@@ -1,15 +1,11 @@
 
 %% ========================% Setting up %======================= %%
-
-% Fieltrip settings
-if ~exist('ft_defaults', 'file')
-    addpath('C:\Users\moniq\Documents\Psychologie\Master Gezondheidszorgpsychologie\Scriptie\Matlab\fieldtrip-20210603\fieldtrip-20210603');    % add fieltrip as your toolbox
-    ft_defaults();      % set all the default fieltrip functions
-end
+clear;
+clc;
 
 % Data Subject settings
-RawPath       = 'C:\Users\krav\surfdrive\Jule_Infant_EEG\RawData\';
-ProcessedPath = 'C:\Users\krav\surfdrive\Jule_Infant_EEG\Processed\';
+RawPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw_data\';       %location of the participant data
+ProcessedPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
 
 % Find all the data
 Files = dir([ProcessedPath, '**\Prediction\FFT.mat']);
@@ -20,7 +16,7 @@ Channels.occipital = {'O1','Oz','O2'};
 
 % Frequencies
 % Define the frequencies from action execution phase
-Frequencies.value = [7 9; 14 18];
+Frequencies.value = [7 9; 12 1];
 Frequencies.names = ["mu", "beta"];
 
 
@@ -29,6 +25,7 @@ for file  =  1:length(Files)
     load([Files(file).folder,'\FFT.mat' ]);
     
     Subject = Freq_data.subject;
+    disp(Subject);
     Freq_data = rmfield(Freq_data,'subject');
     
     % Normalize data
@@ -72,7 +69,7 @@ for file  =  1:length(Files)
     Col_trialinfo = Col_trialinfo(:,2);
 
     % Video training extraction
-    Watched      = VideoWatching(RawPath, Subject);
+    Watched      = VideoWatching(Subject);
     Col_training = repmat(Watched,rep*cha*length(Frequencies.names),1);
     
     CV = table(Col_subject, Col_frequency, Col_channels, Col_trialinfo, Col_training, Col_power );

@@ -1,12 +1,12 @@
  
  
-function [value] = VideoWatching( sub)
+function [value] = VideoWatching(sub)
 
 
 %% Settings
 maximum = (533+2.5)*1000;
-coded = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Video_recordings\test.csv';
-watched = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Video_recordings\TrainingQuantification.csv';
+coded   = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw_data\TrainingCoding.csv';
+watched = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw_data\TrainingQuantification.csv';
 
 %% Import the videocoding
 
@@ -22,7 +22,7 @@ T_Subject = T(contains(T{:, 'Path'}, sub),:); %select specific subject
 %% Import the Duration of watching
 
 colnamesW= {'ID','Set','Consent1','Consent2','Consent3','additional info','Good session','Coders','Done',...
-    'Sum_training','Training'};
+    'ActionExecution','Sum_training','Training'};
 W = readtable(watched, 'Delimiter',',','ReadVariableNames',false);
 W.Properties.VariableNames = colnamesW;
 

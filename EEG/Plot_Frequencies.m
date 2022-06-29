@@ -35,6 +35,9 @@ EX  = ft_appendfreq(cfg, dat(1), dat(2), dat(3),dat(4), dat(5), dat(6), dat(7), 
 clear Files dat
 
 
+
+
+
 %% Prediction (fixation cross) data concatenation
 
 % Find all the data

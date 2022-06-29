@@ -1,13 +1,15 @@
 %% ========================% Setting up %======================= %%
+clear;
+clc;
 
 % Set script directory
 PATH = matlab.desktop.editor.getActiveFilename;
 cd(PATH(1:strfind(PATH,'ActionExecution_Analysis.m')-1));
 
 % Data Subject settings
-InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw\';       %location of the participant data
+InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw_data\';       %location of the participant data
 OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
-Subject = 'S_Stat_08';
+Subject = 'S_Stat_30';
 
 % Create output folder if it dosen't exist
 if ~exist([OutPath Subject], 'dir')
@@ -21,6 +23,14 @@ SavingLocation = [OutPath Subject '\Execution\'];
 % Cap configuration used to plot with layout
 cap_conf = 'acticap-64ch-standard2.mat';
 
+% Prepare neighbouring channels
+cfg = [];
+cfg.layout = cap_conf;
+cfg.method = 'triangulation';
+cfg.compress = 'yes';
+% cfg.feedback = 'yes';
+neighbours = ft_prepare_neighbours(cfg);
+
 
 %% ========================% Define trials and read data %======================= %%
 
@@ -28,7 +38,7 @@ cap_conf = 'acticap-64ch-standard2.mat';
 cfg                         = [];
 cfg.sub                     = Subject;
 cfg.dataset                 = [InPath,Subject,'\' Subject '.eeg'];
-cfg.csv                     = [InPath 'videocoding_EEG.csv'];
+cfg.csv                     = [InPath 'VideoRejection.csv'];
 cfg.sub                     =  Subject;
 cfg.trialfun                = 'GraspingSegmentation';
 cfg.trialdef.prestim        = 0; % in seconds
@@ -56,17 +66,18 @@ data = ft_redefinetrial(cfg,data);
 %%%% Plot %%%%
 cfg = [];
 cfg.viewmode = 'vertical';
-ft_databrowser(cfg, data);
+waitfor(ft_databrowser(cfg, data));
 save([SavingLocation 'Epoched.mat'],'data');
 
 
-%% ========================% Artifacts %======================= %%
+%% ========================% ICA %======================= %%
 
 %%%%% Initial visual rejection with summary %%%%%
 cfg = [];
 cfg.metric      = 'kurtosis';  % use by default kurtosis method
 cfg.method      = 'summary'; % use by default summary method
-cfg.keepchannel = 'nan';
+cfg.keepchannel = 'repair';
+cfg.neighbours  = neighbours;
 art1_data       = ft_rejectvisual(cfg,data);
 
 
@@ -92,34 +103,46 @@ answer      = inputdlg(prompt,dlgtitle,dims);
 reject      = str2num(char(answer{1}));
 close all
 
+% Databrowser visualization
 cfg = [];
 cfg.layout = cap_conf;
-cfg.component   = 1:2; % specify the layout file that should be used for plotting
+cfg.component   = {'runica001'};
 cfg.viewmode = 'component';
-ft_databrowser(cfg, components)
+waitfor(ft_databrowser(cfg, components));
 
+% Confirm the selected 
+prompt      = {'Components to reject: '};
+dlgtitle    = 'Input';
+dims        = [1 60];
+definput    = {int2str(reject)};
+answer      = inputdlg(prompt,dlgtitle,dims,definput);
+reject_f    = str2num(char(answer{1}));
+close all
 
 % Rejecting
 cfg             = [];
 cfg.demean      = 'no';
-cfg.component   = reject; % to be removed component(s)
+cfg.component   = reject_f; % to be removed component(s)
 ica_data = ft_rejectcomponent(cfg, components, art1_data);
 save([SavingLocation 'ICA.mat'],'ica_data');
 
 
-%%%%% Final visual rejection %%%%%
+%% ========================% Final visual rejection %======================= %%
 
 % Summary view
 cfg = [];
 cfg.metric      = 'kurtosis';  % use by default kurtosis method
 cfg.method      = 'summary'; % use by default summary method
-cfg.keepchannel = 'nan';
+cfg.keepchannel = 'repair';
+cfg.neighbours  = neighbours;
 art2_data = ft_rejectvisual(cfg,ica_data);
+save([SavingLocation 'Summary2.mat'],'art2_data');
 
 % Trial rejection
 cfg = [];
 cfg.method  = 'trial';
-cfg.keepchannel = 'nan';
+cfg.keepchannel = 'repair';
+cfg.neighbours  = neighbours;
 art_final_data = ft_rejectvisual(cfg,art2_data);
 
 
