@@ -15,7 +15,7 @@ cd(PATH(1:strfind(PATH,'ActionPrediction_Analysis.m')-1));
 % Data Subject settings
 InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw_data\';       %location of the participant data
 OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
-Subject = 'S_Stat_30';
+Subject = 'S_Stat_60';
 
 % Create output folder if it dosen't exist
 if ~exist([OutPath Subject], 'dir')
@@ -81,7 +81,7 @@ cfg = [];
 cfg.metric      = 'kurtosis';  % use by default kurtosis method
 cfg.method      = 'summary'; % use by default summary method
 cfg.keepchannel = 'repair';
-cfg.keeptrial   = 'nan';
+cfg.keeptrial   = 'no';
 
 cfg.neighbours = neighbours;
 art1_data       = ft_rejectvisual(cfg,data);

@@ -19,18 +19,21 @@ if endsWith(Configuration.sub,'30')
     Trials = Trials(cut:end,:);
 end
 
+% Adjust sub 60
+if Configuration.sub == "S_Stat_60" 
+        Trials = Trials(1:length(datafile.trial),:);
+       
+end
+
 
 if length(Trials{:,'Goodness'}) ~= length(datafile.trialinfo)
-        
-    disp(length(Trials{:,'Goodness'}));
-    disp(length(datafile.trialinfo));
-    
+
     % Error if the number is different
     error(['Error!!!!!!!!!' newline ... 
         'Trials defined during videocoding mismatch trials in the EEG data.' newline ...
-        'Please check the videocoding or the trialdefinition'])
-    disp(length(Trials{:,'Goodness'}));
-    disp(length(datafile.trialinfo));
+        'Please check the videocoding or the trialdefinition' newline ...
+        num2str(length(Trials{:,'Goodness'})) ' - ' ...
+        num2str(length(datafile.trialinfo))]);      
 else
     
     % If it the same number elimintaes the bad ones

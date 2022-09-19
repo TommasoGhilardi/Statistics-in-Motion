@@ -16,7 +16,7 @@ Channels.occipital = {'O1','Oz','O2'};
 
 % Frequencies
 % Define the frequencies from action execution phase
-Frequencies.value = [7 9; 12 1];
+Frequencies.value = [7 9; 12 14];
 Frequencies.names = ["mu", "beta"];
 
 

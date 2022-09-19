@@ -16,7 +16,7 @@ for x=1:length(event)
         trl = cat(1, trl , [event(x).sample, (event(x).sample+hdr.Fs*2-1) , 0, trlval]);
        
       % 1 sec for the rest
-      elseif trlval < 100 && trlval ~= 70 && trlval ~= 60
+      elseif trlval < 100 &&  trlval > 1 && trlval ~= 70 && trlval ~= 60
         trl = cat(1, trl , [event(x).sample, (event(x).sample+hdr.Fs-1) , 0, trlval]);
         
       end     
