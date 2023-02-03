@@ -4,8 +4,8 @@ clear;
 clc;
 
 % Data Subject settings
-RawPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw_data\';       %location of the participant data
-ProcessedPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
+RawPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Bids\';       %location of the participant data
+ProcessedPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\ProcessedBids\';
 
 % Find all the data
 Files = dir([ProcessedPath, '**\Prediction\FFT.mat']);
@@ -69,7 +69,7 @@ for file  =  1:length(Files)
     Col_trialinfo = Col_trialinfo(:,2);
 
     % Video training extraction
-    Watched      = VideoWatching(Subject);
+    Watched      = VideoWatching(RawPath,Subject);
     Col_training = repmat(Watched,rep*cha*length(Frequencies.names),1);
     
     CV = table(Col_subject, Col_frequency, Col_channels, Col_trialinfo, Col_training, Col_power );

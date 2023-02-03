@@ -34,11 +34,11 @@ end
 
 % Read the CSV
 colnames  = {'BeginTime_msec','EndTime_msec','Duration_msec','Goodness',...
-    'Annotations','ActionExecution','File','File Path'};
+    'Annotations','ActionExecution','File','Subject'};
 
 T = readtable(cfg.csv, 'Delimiter',',','ReadVariableNames',false);
 T.Properties.VariableNames = colnames;
-T_Subject = T(contains(T{:, 'File Path'}, cfg.sub),:); %select specific subject
+T_Subject = T(contains(T{:, 'Subject'}, cfg.sub),:); %select specific subject
 
 if endsWith(cfg.sub,'30')
     % Center on the first video fixation

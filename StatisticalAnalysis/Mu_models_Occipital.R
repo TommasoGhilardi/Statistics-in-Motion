@@ -3,34 +3,19 @@
 
 library(lme4)
 library(lmerTest)
-library(modelbased)
+library(easystats)
 
-library(parameters)
-library(performance)
-
-library(ggplot2)
-library(insight)
-library(see)
+library(tidyverse)
 library(cowplot)
 
 ####### Set and read data ---------------------------------------------------------------
 
-directory = "C:\\Users\\krav\\Desktop\\BabyBrain\\Projects\\EEG_probabilities_infants\\Data\\Processed\\"
+setwd("C:\\Users\\krav\\Desktop\\BabyBrain\\Projects\\EEG_probabilities_infants\\Data\\ProcessedBids\\")
 
-rejection = c('S_Stat_06','S_Stat_09','S_Stat_19','S_Stat_21','S_Stat_28',
-              'S_Stat_22','S_Stat_42','S_Stat_64','S_Stat_68' )
+files = list.files(pattern = "*.csv", recursive = TRUE,full.names = FALSE)
 
-files = list.files(directory ,pattern = "*.csv", recursive = TRUE)
+df  = map_dfr(files, read_csv,show_col_types = FALSE)
 
-## Concatenate dataframes
-df = data.frame()
-for(sub in 1:length(files)){
-  
-  if (!any(grepl(strsplit(files[sub], '/', fixed=T)[[1]][1], rejection, fixed = TRUE))){
-    
-    df = rbind(df, read.csv(paste(directory,files[sub], sep = '\\' )))
-  }
-}
 
 ## Select only Mu and Motor area
 df = df[df$Frequency=='mu',]
@@ -64,53 +49,79 @@ print_html(parameters(Anova_prob.aov))
 check_model(Anova_prob.aov)
 
 ### Extract anova-like table
-anova(Anova_prob.aov)
+Anova = anova(Anova_prob.aov)
+Anova
 
 ### Contrast analysis
-contrasts = estimate_contrasts(Anova_prob.aov, contrast  = "Probabilities",adjustment= 'bonferroni',
-                               pbkrtest.limit = 3285,lmerTest.limit = 3285)
+contrasts = estimate_contrasts(Anova_prob.aov, contrast  = "Probabilities",adjustment= 'holm',
+                               pbkrtest.limit = 100000,lmerTest.limit = 1000000)
+
 print_html(contrasts)
 
-######### Visualization
-
-result <- parameters(Anova_prob.aov, effects = "fixed")
-plot(result)
 
 
-### Plot mean estimates
-means = estimate_means(Anova_prob.aov,pbkrtest.limit = 3285,lmerTest.limit = 3285)
-means$SE_L = means$Mean - means$SE
-means$SE_H = means$Mean + means$SE
+####### Plot ---------------------------------------------------------------
 
-ErroBar = ggplot(means, aes(x =  Probabilities, y = Mean)) +
-  geom_line(aes(group = 1),size=1.2, alpha=0.4) +
-  geom_point(aes(colour =  Probabilities),size=6)+
-  geom_errorbar(aes( colour= Probabilities, ymin = CI_low, ymax = CI_high),width = 0.4,size = 1.5)+
-  ylab("log(Mu Power)")+ ylim(0.25,0.75)+
-  theme(legend.position="none",panel.grid.minor = element_line(size = 1),
-        panel.grid.major = element_line(size = 1))
-ggsave('C:\\Users\\krav\\surfdrive\\Projects\\InfantEEG\\Results\\OccipitalAnovaErrorbar.png',device = "png", width = 20, height = 20, units = "cm",dpi=500)
+### Plot half Violin
+df$test = unlist(df['Probability']-3.2)
 
-ErroBar = ErroBar +theme(axis.ticks.x=element_blank(),axis.text.x=element_blank())+xlab(element_blank())
-
-### Plot Violin
-ViolinANova = ggplot(df, aes(x = Probabilities, y = Power)) +
-  # Add base data
-  geom_violin(aes(fill = Probabilities), color = "white") +
-  geom_jitter2(aes(color = Probabilities), width = 0.4, alpha = 0.5) +
+ggplot(df, aes(x = Probability, y = Power)) +
+  geom_violinhalf(aes(fill = Probabilities), color = "white") +
   
-  # Add pointrange and line from means
-  geom_line(data = means, aes(y = Mean, group = 1.5), size = 1.3,alpha=0.6) +
-  geom_pointrange(
-    data = means, aes(y = Mean, ymin = CI_low, ymax = CI_high), size = 1, color = "white" ) +
-  ylim(-1.2,2.2) +ylab("log(Mu Power)")+
-  theme(legend.position="none",panel.grid.minor = element_line(size = 1),
-        panel.grid.major = element_line(size = 1))
+  geom_jitter(aes(x=test ,fill = Probabilities), colour='transparent',stroke = 0,shape= 21,width = 3, alpha = 0.6, size=1.8) +
+  geom_boxplot(aes(x= Probability, group= Probability), width=2,outlier.shape = NA)+
+  labs(y = "log(Mu Power)", title = 'Occipital mu power for the different levels of probability' )+
+  scale_x_continuous(breaks = c(0,25,50,75,100))+
+  theme_grey(base_size=20)+theme(legend.position="none",plot.title = element_text(size = 17))
 
 
-Final = plot_grid(ErroBar,ViolinANova, align ='v',ncol=1)
-Final
-ggsave('C:\\Users\\krav\\surfdrive\\Projects\\InfantEEG\\Results\\OccipitalAnovaAll.png',Final,device = "png", width = 20, height = 20, units = "cm",dpi=500)
+ggsave('C:\\Users\\krav\\surfdrive\\Projects\\InfantEEG\\Results\\OccipitalAnova.png',device = "png", width = 18, height = 20, units = "cm",dpi=500)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ####### Run Linear Model ---------------------------------------------------------------
@@ -118,7 +129,9 @@ ggsave('C:\\Users\\krav\\surfdrive\\Projects\\InfantEEG\\Results\\OccipitalAnova
 ### The model
 Model  = lmer(Power ~Probability +(1|Id/Channels),data=df) # Basic
 ModelT = lmer(Power ~Probability + Training  +(1|Id/Channels),data=df) # With training
-ModelQ = lmer(Power ~poly(Probability,2,raw = TRUE) + Training  +(1|Id/Channels),data=df) # Quadratic
+ModelQ = lmer(Power ~ poly(Probability, 2, raw = TRUE) +(1|Id/Channels),data=df)
+
+test_performance(Model, ModelT,ModelQ)
 
 ### Check Best Model
 test_performance(Model, ModelT)
@@ -128,7 +141,7 @@ print_html(parameters(Model))
 check_model(Model)
 
 
-### PLot
+### Plot
 Predicted = estimate_expectation(Model)
 Predicted$SE_low = Predicted$Predicted - Predicted$SE
 Predicted$SE_high = Predicted$Predicted + Predicted$SE
@@ -143,33 +156,39 @@ ggplot(df, aes(x = Probability, y = Power)) +
   geom_jitter2(aes(x=test ,fill = Probabilities),shape= 21,width = 3, alpha = 0.6) +
   
   # The model
-  geom_ribbon(data = Predicted,aes(ymin=CI_low, ymax=CI_high), linetype=2, alpha=0.2)+
-  geom_line(data = Predicted,aes( x=Probability  ,y=Predicted),size=1.6)+
+  geom_ribbon(data = Predicted, aes(x=Probability,ymin=CI_low, ymax=CI_high), linetype=2, alpha=0.2,inherit.aes = F)+
+  geom_line(data = Predicted,aes( x=Probability  ,y=Predicted),size=1.6,inherit.aes = F)+
   
-  # Add pointrange
-  geom_pointrange(data = means, aes(as.numeric(as.character(Probabilities)),
-                                    y = Mean, ymin = CI_low, ymax = CI_high), size = 1, color = "white" ) +
-  ylim(-1,2)+ scale_x_continuous( breaks = seq(-25, 100, by = 25))+ ylab("log(Mu Power)")+
+  # Add pointrange 
+  geom_point( data = means, aes(x= as.numeric(as.character(Probabilities)),y = Mean), size =6, color = "white",inherit.aes = F ) +
+  geom_linerange( data = means, aes(x= as.numeric(as.character(Probabilities)),y = Mean, ymin = CI_low, ymax = CI_high),
+                  linewidth =2, color = "white",inherit.aes = F ) +
+  
+  
+   scale_x_continuous( breaks = seq(-25, 100, by = 25))+ ylab("log(Mu Power)")+
   theme(panel.grid.minor = element_line(size = 1), panel.grid.major = element_line(size = 1))
 ggsave('C:\\Users\\krav\\surfdrive\\Projects\\InfantEEG\\Results\\OccipitalHalfViolin.png',device = "png", width = 18, height = 20, units = "cm",dpi=500)
 
 
 ### Plot entire violin
 ggplot(df, aes(x = Probability, y = Power)) +
-  
-  # Add base data
   geom_violin(aes(fill = Probabilities), color = "white") +
-  geom_jitter2(aes(color = Probabilities), width = 10, alpha = 0.5)+
+  geom_jitter2(aes(x=Probability ,fill = Probabilities,color = Probabilities),width = 10, alpha = 0.5) +
   
   # The model
-  geom_ribbon(data = Predicted,aes(ymin=CI_low, ymax=CI_high), linetype=2, alpha=0.2)+
-  geom_line(data = Predicted,aes( x=Probability  ,y=Predicted),size=1.6)+
+  geom_ribbon(data = Predicted, aes(x=Probability,ymin=CI_low, ymax=CI_high), linetype=2, alpha=0.2,inherit.aes = F)+
+  geom_line(data = Predicted,aes( x=Probability  ,y=Predicted),size=1.6,inherit.aes = F)+
   
   # Add pointrange
-  geom_pointrange(data = means, aes(as.numeric(as.character(Probabilities)),
-                                    y = Mean, ymin = CI_low, ymax = CI_high), size = 1, color = "white" ) +
-  ylim(-1,2) + scale_x_continuous(limits=c(-12, 112),breaks = seq(0, 100, by = 25))+ylab("log(Mu Power)")+
+  geom_point( data = means, aes(x= as.numeric(as.character(Probabilities)),y = Mean), size =6, color = "white",inherit.aes = F ) +
+  geom_linerange( data = means, aes(x= as.numeric(as.character(Probabilities)),y = Mean, ymin = CI_low, ymax = CI_high),
+                  linewidth =2, color = "white",inherit.aes = F ) +
+  
+  
+  scale_x_continuous( breaks = seq(-25, 100, by = 25))+ ylab("log(Mu Power)")+
   theme(panel.grid.minor = element_line(size = 1), panel.grid.major = element_line(size = 1))
+
+
 ggsave('C:\\Users\\krav\\surfdrive\\Projects\\InfantEEG\\Results\\OccipitalWholeViolin.png',device = "png", width = 20, height = 20, units = "cm",dpi=500)
 
 
@@ -187,25 +206,5 @@ ggplot(means, aes(x =  as.numeric(as.character(Probabilities)), y = Mean)) +
 
 ggsave('C:\\Users\\krav\\surfdrive\\Projects\\InfantEEG\\Results\\OccipitalZoomed.png',device = "png", width = 15, height = 20, units = "cm",dpi=500)
 
-
-
-
-
-####### Run Model on Surprise ---------------------------------------------------------------
-
-dc = df[df['Trial']!=0,]
-
-dc['Expectancy'] = dc['Trial']
-dc[dc['Expectancy']==1,'Expectancy'] = -log2(0.25)
-dc[dc['Expectancy']==2,'Expectancy'] = -log2(0.5)
-dc[dc['Expectancy']==3,'Expectancy'] = -log2(0.75)
-dc[dc['Expectancy']==4,'Expectancy'] = -log2(1)
-
-### The model
-ModelE <- lmer(Power ~ Expectancy+Training  +(1|Id/Channels),data=dc)
-print_html(parameters(ModelE))
-
-### Check assumptions
-check_model(ModelE)
 
 

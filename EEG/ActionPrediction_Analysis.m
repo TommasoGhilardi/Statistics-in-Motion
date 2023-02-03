@@ -13,9 +13,9 @@ PATH = matlab.desktop.editor.getActiveFilename;
 cd(PATH(1:strfind(PATH,'ActionPrediction_Analysis.m')-1));
 
 % Data Subject settings
-InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw_data\';       %location of the participant data
-OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
-Subject = 'S_Stat_60';
+InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Bids\';       %location of the participant data
+OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\BidsProcessed\';
+Subject = 'sub-06';
 
 % Create output folder if it dosen't exist
 if ~exist([OutPath Subject], 'dir')
@@ -50,7 +50,7 @@ neighbours = ft_prepare_neighbours(cfg);
 %%%%% Segmenting definition %%%%%
 cfg                         = [];
 cfg.sub                     = Subject;
-cfg.dataset                 = [InPath,Subject,'\' Subject '.eeg'];
+cfg.dataset                 = fullfile(InPath,Subject,'eeg', [Subject '_eeg.eeg']);
 cfg.trialfun                = 'PredictionSegmentation';
 cfg.trialdef.eventtype      = 'Stimulus';
 cfg = ft_definetrial(cfg);

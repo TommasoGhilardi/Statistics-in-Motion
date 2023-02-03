@@ -1,11 +1,10 @@
  
  
-function [value] = VideoWatching(sub)
+function [value] = VideoWatching(Path, sub)
 
 
 %% Settings
-watched = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw_data\TrainingVideoLength.csv';
-
+watched = fullfile(Path,'TrainingVideoLength.csv');
 
 %% Import the Duration of watching
 

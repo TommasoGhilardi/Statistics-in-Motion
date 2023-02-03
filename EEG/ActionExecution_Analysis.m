@@ -7,9 +7,9 @@ PATH = matlab.desktop.editor.getActiveFilename;
 cd(PATH(1:strfind(PATH,'ActionExecution_Analysis.m')-1));
 
 % Data Subject settings
-InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Raw_data\';       %location of the participant data
+InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Bids\';       %location of the participant data
 OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
-Subject = 'S_Stat_60';
+Subject = 'sub-60';
 
 % Create output folder if it dosen't exist
 if ~exist([OutPath Subject], 'dir')
@@ -37,9 +37,8 @@ neighbours = ft_prepare_neighbours(cfg);
 %%%%% Segmenting definition %%%%%
 cfg                         = [];
 cfg.sub                     = Subject;
-cfg.dataset                 = [InPath,Subject,'\' Subject '.eeg'];
-cfg.csv                     = [InPath 'VideoRejection.csv'];
-cfg.sub                     =  Subject;
+cfg.dataset                 = fullfile(InPath,Subject,'eeg', [Subject '_eeg.eeg']);
+cfg.csv                     = fullfile(InPath, 'VideoRejection.csv');
 cfg.trialfun                = 'GraspingSegmentation';
 cfg.trialdef.prestim        = 0; % in seconds
 cfg = ft_definetrial(cfg);

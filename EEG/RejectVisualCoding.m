@@ -3,11 +3,11 @@ function [DATA] = RejectVisualCoding(Configuration, datafile)
 
 % Read the CSV
 colnames  = {'BeginTime_msec','EndTime_msec','Duration_msec','Goodness',...
-    'Annotations','ActionExecution','File','File Path'};
+    'Annotations','ActionExecution','File','Subject'};
 
 T = readtable(Configuration.file, 'Delimiter',',','ReadVariableNames',false);
 T.Properties.VariableNames = colnames;
-T_Subject = T(contains(T{:, 'File Path'}, Configuration.sub),:); %select specific subject
+T_Subject = T(contains(T{:, 'Subject'}, Configuration.sub),:); %select specific subject
 
 
 %%%% Check if there is the same number of trials between videocoding and EEG %%%%
@@ -20,9 +20,8 @@ if endsWith(Configuration.sub,'30')
 end
 
 % Adjust sub 60
-if Configuration.sub == "S_Stat_60" 
-        Trials = Trials(1:length(datafile.trial),:);
-       
+if Configuration.sub == "sub-60" 
+        Trials = Trials(1:length(datafile.trial),:); 
 end
 
 
