@@ -10,14 +10,6 @@
 
 There could be multiple causes to the infant not watching: not paying attention, parent interference, moving, crying. This is not relevant for our analysis. What we are focusing on is the amount of video watched by the infant.
 
-***How to save***\
-Save each file in the *TrainingVideos* folder as .etf and export them as *Tab-delimited Text* with .csv extension.\
-Use the names:
--   Training1.etf / Training1.csv
--   Training2.etf / Training2.csv
--   Training3.etf / Training3.csv
-
-
 ## **EEG session**
 
 ### Video watching
@@ -52,9 +44,5 @@ When a trial is rejected the reason of its rejection should be reported. Options
 #### **ActionExecution:**
 Segment the data in trials in which the infant is reaching and manipulating the toybox.
 
-***How to save***\
-Save the file as .etf and export it as *Tab-delimited Text* with .csv extension.\
-Use the name:
--   CodingEEG.etf / CodingEEG.csv
 
 <img src="https://github.com/TommasoGhilardi/Statistics-in-Motion/blob/main/Video/ElanExport.jpg" width="350">
