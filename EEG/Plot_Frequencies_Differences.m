@@ -104,7 +104,7 @@ set(gca,'Xticklabel',[]) %to just get rid of the numbers but leave the ticks.
 
 set(gca,'XTickLabel',[],'FontName','Times','fontsize',24)
 lab1 = get(gca,'YTickLabel');
-set(gca,'YTickLabel',lab1,'FontName','Times','fontsize',24)
+% set(gca,'YTickLabel',lab1,'FontName','Times','fontsize',24)
 
 
 % Extract peaks

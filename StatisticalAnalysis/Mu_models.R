@@ -35,7 +35,7 @@ df$Probabilities =  factor(df$Probability) # categorical for anova
 ####### Run Anova ---------------------------------------------------------------
 
 ### The model
-Anova_prob.aov<- lmer(Power ~  Probabilities +(1|Id/Channels),data=db)
+Anova_prob.aov<- lmer(Power ~  Probabilities +(1|Id/Channels),data=df)
 Anova_prob.aovT<- lmer(Power ~  Probabilities +Training  +(1|Id/Channels),data=df)
 
 ### Check if TIME is influential
@@ -102,9 +102,8 @@ ggplot(df, aes(x = Probability, y = Power)) +
                                     y = Mean, ymin = CI_low, ymax = CI_high), size = 1.2, color = "white",width=3)+
   geom_pointrange(data = means, aes(as.numeric(as.character(Probabilities)),
   y = Mean, ymin = CI_low, ymax = CI_high), size = 1, color = "white") +
-  ylim(-1,2)+
   labs(y = "log(Mu Power)", title = 'Central mu power for the different levels of probability' )+
-  scale_x_continuous(breaks = c(0,25,50,75,100))+
+  scale_x_continuous(labels = c('0 [baseline]' ,'25','50','75','100'), breaks = c(0,25,50,75,100))+
   theme_grey(base_size=20)+theme(legend.position="none",plot.title = element_text(size = 17))
   
 

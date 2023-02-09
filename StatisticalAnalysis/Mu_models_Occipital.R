@@ -71,7 +71,7 @@ ggplot(df, aes(x = Probability, y = Power)) +
   geom_jitter(aes(x=test ,fill = Probabilities), colour='transparent',stroke = 0,shape= 21,width = 3, alpha = 0.6, size=1.8) +
   geom_boxplot(aes(x= Probability, group= Probability), width=2,outlier.shape = NA)+
   labs(y = "log(Mu Power)", title = 'Occipital mu power for the different levels of probability' )+
-  scale_x_continuous(breaks = c(0,25,50,75,100))+
+  scale_x_continuous(labels = c('baseline' ,'25','50','75','100'), breaks = c(0,25,50,75,100))+
   theme_grey(base_size=20)+theme(legend.position="none",plot.title = element_text(size = 17))
 
 
