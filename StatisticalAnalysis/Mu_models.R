@@ -100,10 +100,10 @@ ggplot(df, aes(x = Probability, y = Power)) +
   # Add pointrange
   geom_errorbar(data = means, aes(as.numeric(as.character(Probabilities)),
                                     y = Mean, ymin = CI_low, ymax = CI_high), size = 1.2, color = "white",width=3)+
-  geom_pointrange(data = means, aes(as.numeric(as.character(Probabilities)),
-  y = Mean, ymin = CI_low, ymax = CI_high), size = 1, color = "white") +
+  geom_point(data = means, aes(as.numeric(as.character(Probabilities)),
+  y = Mean), size = 3, color = "white") +
   labs(y = "log(Mu Power)", title = 'Central mu power for the different levels of probability' )+
-  scale_x_continuous(labels = c('0 [baseline]' ,'25','50','75','100'), breaks = c(0,25,50,75,100))+
+  scale_x_continuous(labels = c('baseline' ,'25','50','75','100'), breaks = c(0,25,50,75,100))+
   theme_grey(base_size=20)+theme(legend.position="none",plot.title = element_text(size = 17))
   
 
