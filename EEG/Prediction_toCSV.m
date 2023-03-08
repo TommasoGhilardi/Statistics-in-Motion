@@ -13,11 +13,14 @@ Files = dir([ProcessedPath, '**\Prediction\FFT.mat']);
 % Channels of interest definition
 Channels.motor     = {'C3','Cz','C4'};
 Channels.occipital = {'O1','Oz','O2'};
+Channels.clusterC = {'FC1' , 'C3', 'CP1', 'Cz', 'FC2', 'C4', 'CP2'};
+Channels.clusterR = {'FC2', 'CP2', 'C4', 'FC6', 'CP6'};
+Channels.clusterL = {'FC1', 'CP1', 'C3', 'FC5', 'CP5'};
 
 % Frequencies
 % Define the frequencies from action execution phase
-Frequencies.value = [7 9; 12 14];
-Frequencies.names = ["mu", "beta"];
+Frequencies.value = [7 9];
+Frequencies.name = "mu";
 
 
 %% Extract Frequencies
@@ -37,40 +40,30 @@ for file  =  1:length(Files)
     Col_trialinfo = [];
     Col_frequency = [];
     
-    for x = 1:length(Frequencies.names)
         
-        % Select specified frequenceis     
-        cfg = [];
-        cfg.frequency   = [Frequencies.value(x,1) Frequencies.value(x,2)] ;
-        cfg.avgoverfreq = 'yes';
-        cfg.channel     = [Channels.motor Channels.occipital];
-        avg = ft_selectdata(cfg, Freq_data) ;
-        
-        rep = size(avg.powspctrm,1);
-        cha = size(avg.powspctrm,2);
-        
-        % Extraxt the values to table
-        Col_channels = [Col_channels; repmat( avg.label(1),rep,1);...
-            repmat( avg.label(2),rep,1);...
-            repmat( avg.label(3),rep,1);...
-            repmat( avg.label(4),rep,1);...
-            repmat( avg.label(5),rep,1);...
-            repmat( avg.label(6),rep,1)];
+    % Select specified frequenceis     
+    cfg = [];
+    cfg.frequency   = Frequencies.value;
+    cfg.avgoverfreq = 'yes';
+    cfg.channel     = [Channels.motor Channels.occipital, Channels.clusterC,Channels.clusterL,Channels.clusterR];
+    avg = ft_selectdata(cfg, Freq_data) ;
 
-        Col_power = [Col_power; avg.powspctrm(:,1); avg.powspctrm(:,1); avg.powspctrm(:,2);...
-            avg.powspctrm(:,3); avg.powspctrm(:,4); avg.powspctrm(:,5)];
+    rep = size(avg.powspctrm,1);
+    cha = size(avg.powspctrm,2);
 
-        Col_trialinfo = [Col_trialinfo; repmat(avg.trialinfo,length(avg.label),1)];
-        Col_frequency = [Col_frequency; repmat(Frequencies.names(x),rep*length(avg.label),1)];
-    end
-    Col_subject   = repmat(Subject,rep*cha*length(Frequencies.names),1);
+    % Extraxt the values to table
+    Col_channels =  repelem(avg.label,rep);
+    Col_power = reshape(avg.powspctrm.',1,[])';
 
+    Col_trialinfo = repmat(avg.trialinfo,length(avg.label),1);
+    Col_frequency = repmat(Frequencies.name,rep*length(avg.label),1);
+    Col_subject   = repmat(Subject,rep*cha,1);
     Col_trialinfo = num2str(Col_trialinfo);
     Col_trialinfo = Col_trialinfo(:,2);
 
     % Video training extraction
     Watched      = VideoWatching(RawPath,Subject);
-    Col_training = repmat(Watched,rep*cha*length(Frequencies.names),1);
+    Col_training = repmat(Watched,rep*cha,1);
     
     CV = table(Col_subject, Col_frequency, Col_channels, Col_trialinfo, Col_training, Col_power );
     CV.Properties.VariableNames = {'Id','Frequency','Channels','Trial','Training','Power'};
