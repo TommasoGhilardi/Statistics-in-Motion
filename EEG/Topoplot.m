@@ -105,26 +105,31 @@ cfg.xlim   = Frequencies.value;
 cfg.zlim   = [-0.24 0.24];
 cfg.colorbar =  'yes';
 cfg.colormap = 'jet';
+fontsize= 35;
 
 figure;
 cfg.figure = subplot(2,2,1);
 ft_topoplotER(cfg, Low);
-title('25%')
+t = title('25%');
+t.FontSize = 25;
 
 cfg.figure = subplot(2,2,2);
 ft_topoplotER(cfg, Medium);
-title('50%')
+t = title('50%');
+t.FontSize = 25;
 
 cfg.figure = subplot(2,2,3);
 ft_topoplotER(cfg, High);
-title('75%')
+t = title('75%');
+t.FontSize = 25;
 
 cfg.figure = subplot(2,2,4);
 ft_topoplotER(cfg, Det);
-title('100%')
+t = title('100%');
+t.FontSize = 25;
 
-sgtitle('Mu rhythm differnce with baseline')
-
+sgtitle('Mu rhythm differnce with baseline',fontsize=fontsize)
+% plt.suptitle('Mu rhythm differnce with baseline', fontsize=fontsize)
     
     
     
