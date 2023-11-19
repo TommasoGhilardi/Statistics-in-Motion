@@ -4,8 +4,8 @@ clear;
 clc;
 
 % Data Subject settings
-RawPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Bids\';       %location of the participant data
-ProcessedPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\ProcessedBids\';
+RawPath  = 'C:\Users\tomma\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Bids\';       %location of the participant data
+ProcessedPath = 'C:\Users\tomma\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\ProcessedBids\';
 
 %cap configuration
 cap_conf = 'acticap-64ch-standard2.mat';
@@ -28,17 +28,20 @@ Triggers.predictive_window.deterministic    = [14,24,34,44];
 
 
 %% Combine data
-for file  =  1:length(Files)
+
+for file  = 1:length(Files)
     load([Files(file).folder,'\FFT.mat' ]);
     Freq_data = rmfield(Freq_data,'subject');
 
+    Freq_data.powspctrm = log10(Freq_data.powspctrm);
     
     %% Extract each trial
     
     cfg = [];
     cfg.avgoverrpt  = 'yes';
     cfg.nanmean     = 'yes';
-    
+
+
     % Expectancy
     cfg.trials      = find(ismember(Freq_data.trialinfo, Triggers.fixation_cross));
     base            = ft_selectdata(cfg, Freq_data);
@@ -57,21 +60,26 @@ for file  =  1:length(Files)
     
     
         
-    %% Calculate difference
+    %% Export as cell array
     
-    cfg = [];
-    cfg.parameter   = 'powspctrm';
-    cfg.operation   = '((x1-x2)/(x1+x2))';
-    
-    if ~isnan(low.powspctrm)    Low{file}     = ft_math(cfg, low, base);      end    
-    if ~isnan(medium.powspctrm) Medium{file}  = ft_math(cfg, medium, base);   end
-    if ~isnan(high.powspctrm)   High{file}    = ft_math(cfg, high, base);     end
-    if ~isnan(det.powspctrm)    Det{file}     = ft_math(cfg, det, base);      end
+    if ~isnan(base.powspctrm)    Base{file}    = base ;    end    
+    if ~isnan(low.powspctrm)    Low{file}     = low ;     end    
+    if ~isnan(medium.powspctrm) Medium{file}  = medium;   end
+    if ~isnan(high.powspctrm)   High{file}    = high;     end
+    if ~isnan(det.powspctrm)    Det{file}     = det;      end        
         
     clear Freq_data medium low base high det
 end
     
-% remove empty cells
+% Baseline corrections
+for x= 1:length(Base)
+    if ~isempty(Low{x})     Low{x}.powspctrm    = Low{x}.powspctrm - Base{x}.powspctrm;     end
+    if ~isempty(Medium{x})  Medium{x}.powspctrm = Medium{x}.powspctrm - Base{x}.powspctrm;  end
+    if ~isempty(High{x})     High{x}.powspctrm   = High{x}.powspctrm - Base{x}.powspctrm;    end
+    if ~isempty(Det{x})     Det{x}.powspctrm	= Det{x}.powspctrm - Base{x}.powspctrm;     end
+end
+
+% Remove empty cells
 Low     = Low(~cellfun('isempty',Low));
 Medium  = Medium(~cellfun('isempty',Medium));
 High    = High(~cellfun('isempty',High));
@@ -85,11 +93,9 @@ Medium      = ft_appendfreq(cfg,Medium{:});
 High        = ft_appendfreq(cfg,High{:});
 Det         = ft_appendfreq(cfg,Det{:});
 
-
 % Average
 cfg = [];
 cfg.avgoverrpt = 'yes';
-
 Low         = ft_selectdata(cfg,Low);
 Medium      = ft_selectdata(cfg,Medium);
 High        = ft_selectdata(cfg,High);
@@ -100,10 +106,12 @@ Det         = ft_selectdata(cfg,Det);
 
 % Common
 cfg = [];
-cfg.layout = cap_conf;
-cfg.xlim   = Frequencies.value;  
-cfg.zlim   = [-0.24 0.24];
-cfg.colorbar =  'yes';
+cfg.layout  = cap_conf;
+cfg.xlim    = Frequencies.value;  
+cfg.zlim    = [-0.16 0.16];
+cfg.comment =  'no';         
+cfg.colorbar = 'no';
+
 cfg.colormap = 'jet';
 fontsize= 35;
 
@@ -128,12 +136,11 @@ ft_topoplotER(cfg, Det);
 t = title('100%');
 t.FontSize = 25;
 
-sgtitle('Mu rhythm differnce with baseline',fontsize=fontsize)
-% plt.suptitle('Mu rhythm differnce with baseline', fontsize=fontsize)
+sgtitle('Mu rhythm difference with baseline',fontsize=fontsize)
     
-    
-    
-    
+
+
+
     
     
     

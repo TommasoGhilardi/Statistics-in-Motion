@@ -13,9 +13,9 @@ PATH = matlab.desktop.editor.getActiveFilename;
 cd(PATH(1:strfind(PATH,'ActionPrediction_Analysis.m')-1));
 
 % Data Subject settings
-InPath  = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Bids\';       %location of the participant data
-OutPath = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\BidsProcessed\';
-Subject = 'sub-06';
+InPath  = 'C:\Users\tomma\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Bids\';       %location of the participant data
+OutPath = 'C:\Users\tomma\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\BidsProcessed\';
+Subject = 'sub-08';
 
 % Create output folder if it dosen't exist
 if ~exist([OutPath Subject], 'dir')
@@ -63,6 +63,10 @@ cfg.lpfreq      = 40;
 cfg.detrend     = 'yes';
 data = ft_preprocessing(cfg); % read raw data
 
+
+
+
+
 if isequal(data.label{end},'FP1')
     data.label{end} = 'Fp1';
 end
@@ -71,7 +75,7 @@ end
 cfg = [];
 cfg.viewmode = 'vertical';
 waitfor(ft_databrowser(cfg, data));
-save([SavingLocation 'Epoched.mat'],'data');
+%save([SavingLocation 'Epoched.mat'],'data');
 
 
 %% ========================% ICA %======================= %%
@@ -85,7 +89,7 @@ cfg.keeptrial   = 'no';
 
 cfg.neighbours = neighbours;
 art1_data       = ft_rejectvisual(cfg,data);
-save([SavingLocation 'Summary1.mat'],'art1_data');
+%save([SavingLocation 'Summary1.mat'],'art1_data');
 
 %%%%% ICA %%%%%
 cfg             = [];
@@ -131,7 +135,7 @@ cfg             = [];
 cfg.demean      = 'no';
 cfg.component   = reject_f; % to be removed component(s)
 ica_data = ft_rejectcomponent(cfg, components, art1_data);
-save([SavingLocation 'ICA.mat'],'ica_data');
+%save([SavingLocation 'ICA.mat'],'ica_data');
 
 
 %% ========================% Trials Selection %======================= %%
@@ -148,7 +152,7 @@ cfg      = [];
 cfg.sub  = Subject;
 cfg.file = [InPath 'VideoRejection.csv'];
 Selected_trials = RejectVisualCoding(cfg, Selected_trials);
-save([SavingLocation 'SelectedTrials.mat'],'Selected_trials');
+%save([SavingLocation 'SelectedTrials.mat'],'Selected_trials');
 
 
 %% ========================% Final visual rejection %======================= %%
@@ -160,7 +164,7 @@ cfg.method      = 'summary'; % use by default summary method
 cfg.keepchannel = 'repair';
 cfg.neighbours  = neighbours;
 art2_data = ft_rejectvisual(cfg,Selected_trials);
-save([SavingLocation 'Summary2.mat'],'art2_data');
+%save([SavingLocation 'Summary2.mat'],'art2_data');
 
 
 % Trial rejection
@@ -179,7 +183,7 @@ cfg.refchannel = 'all';
 art_final_data = ft_preprocessing(cfg, art_final_data);
 
 art_final_data.subjetc = Subject;
-save([SavingLocation 'Clean.mat'],'art_final_data');
+%save([SavingLocation 'Clean.mat'],'art_final_data');
 
 
 %% ========================% Show trial distribution %======================= %%

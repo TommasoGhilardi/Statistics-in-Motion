@@ -4,7 +4,7 @@ clear;
 clc;
 
 % Data Subject settings
-Path = 'C:\Users\krav\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
+Path = 'C:\Users\tomma\Desktop\BabyBrain\Projects\EEG_probabilities_infants\Data\Processed\';
 
 % Channels of interest definition
 Channels.motor = {'C3','Cz','C4'};

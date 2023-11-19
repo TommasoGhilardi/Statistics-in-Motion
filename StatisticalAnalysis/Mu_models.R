@@ -7,20 +7,19 @@ library(easystats)
 library(tidyverse)
 
 library(cowplot)
-
+library(brms)
 
 ####### Set and read data ---------------------------------------------------------------
 
-setwd("C:\\Users\\krav\\Desktop\\BabyBrain\\Projects\\EEG_probabilities_infants\\Data\\ProcessedBids\\")
+setwd("C:\\Users\\tomma\\Desktop\\BabyBrain\\Projects\\EEG_probabilities_infants\\Data\\ProcessedBids\\")
 
-files = list.files(pattern = "*.csv", recursive = TRUE,full.names = FALSE)
+# Find all files and concatenate dataframes
+files = list.files(pattern = "*DFmu.csv", recursive = TRUE,full.names = FALSE)
+df = map_dfr(files, read_csv,show_col_types = FALSE)
 
-df  = map_dfr(files, read_csv,show_col_types = FALSE)
-
-## Select only Mu and Motor area
-df = df[df$Frequency=='mu',]
-df<- df[ df$Channels != 'O1'& df$Channels != 'O2' & df$Channels != 'Oz',]
-
+## Create cluster of interest over the motor area
+Cluster = c('C3' , 'Cz', 'C4')
+df = df[df$Channels %in% Cluster,] # select channels in the cluster
 
 # Make Probabilities more understandable
 df$Probability = df$Trial
@@ -32,36 +31,60 @@ df[df['Probability']==4,'Probability'] = 100
 df$Probabilities =  factor(df$Probability) # categorical for anova
 
 
-####### Run Anova ---------------------------------------------------------------
+#######  Plot to explroe the data --------------------------------------------------------------------
+
+## Distributions
+DistP = ggplot(df, aes(x = Power, color = Probabilities))+
+  geom_density()+
+  ggtitle("Exploring data distribution over the probability")
+
+DistC = ggplot(df, aes(x = Power, color = Channels))+
+  geom_density()+
+  ggtitle("Exploring data distribution over the Channels")
+
+plot_grid(DistP, DistC, nrow = 1, align = 'hv')
+
+
+## Boxplot of the data
+one = ggplot(df, aes(x = Probability, y = Power, color = Probabilities))+
+  geom_boxplot(linewidth =1)+
+  facet_wrap(~Channels)+
+  theme_bw(base_size = 20)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        legend.position = "none")
+
+
+## Geom smooth using linear models
+two = ggplot(df, aes(x = Probability, y = Power, color = Channels))+
+  geom_point()+
+  geom_smooth(method = 'lm')+
+  facet_wrap(~Channels)+
+  scale_fill_brewer(palette="Dark2")+
+  scale_color_brewer(palette="Dark2")+
+  theme_bw(base_size = 20)+
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text.x = element_blank())
+
+plot_grid(one, two, nrow = 2, align = 'hv')
+ggsave('C:\\Users\\tomma\\surfdrive - Ghilardi, T. (Tommaso)@surfdrive.surf.nl\\Projects\\InfantEEG\\Results\\Lines.jpg',
+       width = 30, height = 40, units = "cm",dpi=1000)
+
+
+#######  Run Anovas ---------------------------------------------------------------
 
 ### The model
-Anova_prob.aov<- lmer(Power ~  Probabilities +(1|Id/Channels),data=df)
-Anova_prob.aovT<- lmer(Power ~  Probabilities +Training  +(1|Id/Channels),data=df)
+Anova_prob.aov      =  lmer(Power ~  Probabilities + (1|Id/Channels), data=df)
+Anova_prob.Training =  lmer(Power ~  Probabilities + Training  +(1|Id/Channels), data=df)
 
-### Check if TIME is influential
-anova(Anova_prob.aov, Anova_prob.aovT)
-test_likelihoodratio(Anova_prob.aov, Anova_prob.aovT)
-
-### Parameters of the model
-print_html(parameters(Anova_prob.aov))
-
-### Check assumptions
-check_model(Anova_prob.aov)
 
 ### Extract anova-like table
 anova(Anova_prob.aov)
+anova(Anova_prob.Training)
 
-### Contrast analysis
-contrasts = estimate_contrasts(Anova_prob.aov, contrast  = "Probabilities",adjustment= 'holm',
-                               pbkrtest.limit = 100000,lmerTest.limit = 100000)
-print_html(contrasts)
-
-
-###  mean estimates
-means = estimate_means(Anova_prob.aov,pbkrtest.limit = 3285,lmerTest.limit = 3285)
-means$SE_L = means$Mean - means$SE
-means$SE_H = means$Mean + means$SE
-
+### Check assumptions
+check_model(Anova_prob.aov)
 
 
 
@@ -70,9 +93,11 @@ means$SE_H = means$Mean + means$SE
 ### The model
 Model  = lmer(Power ~Probability +(1|Id/Channels),data=df) # Basic
 ModelT = lmer(Power ~Probability + Training  +(1|Id/Channels),data=df) # With training
+ModelXT = lmer(Power ~ Probability + trialN + Training  +(1|Id/Channels),data=df,
+               control = lmerControl(optimizer ="Nelder_Mead")) # With training
 
 ### Check Best Model
-test_performance(Model, ModelT)
+test_performance(Model, ModelT,ModelXT)
 print_html(parameters(Model))
 
 ### Check assumptions
@@ -95,11 +120,11 @@ ggplot(df, aes(x = Probability, y = Power)) +
   
   # The model
   geom_ribbon( aes(ymin=Predicted$CI_low, ymax=Predicted$CI_high), linetype=2, alpha=0.2)+
-  geom_line(  data = Predicted, aes( x=Probability  ,y=Predicted),size=1.6)+
+  geom_line(  data = Predicted, aes( x=Probability  ,y=Predicted),linewidth=1.6)+
   
   # Add pointrange
   geom_errorbar(data = means, aes(as.numeric(as.character(Probabilities)),
-                                    y = Mean, ymin = CI_low, ymax = CI_high), size = 1.2, color = "white",width=3)+
+                                    y = Mean, ymin = CI_low, ymax = CI_high), linewidth = 1.2, color = "white",width=3)+
   geom_point(data = means, aes(as.numeric(as.character(Probabilities)),
   y = Mean), size = 3, color = "white") +
   labs(y = "log(Mu Power)", title = 'Central mu power for the different levels of probability' )+
